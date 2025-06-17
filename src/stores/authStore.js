@@ -31,6 +31,19 @@ export const useAuthStore = defineStore("auth", {
             }
         },
 
+        async isAuthenticated() {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) return false;
+                api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+                await this.fetchUser();
+                return true;
+            } catch (error) {
+                console.error("Authentication check failed:", error);
+                return false;
+            }
+        },
+
         async fetchUser() {
             try {
                 const response = await api.get("/auth/me");
@@ -47,13 +60,8 @@ export const useAuthStore = defineStore("auth", {
             this.user = { id: null, username: "", email: "", role: "" };
             localStorage.removeItem("token");
             delete api.defaults.headers.common["Authorization"];
-            router.push({ name: "login" });
+            router.push("/login");
         },
     }
 });
 
-/**
- * After login, you should call fetchUser to ensure you always have the latest user data.
- * You can refactor the login action to only set the token, then call fetchUser.
- * Example refactored login:
- */
