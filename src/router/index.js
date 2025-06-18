@@ -3,11 +3,12 @@ import Layout from "../components/Layout.vue";
 import HomePage from "../pages/HomePage.vue";
 import AuthPage from "../pages/AuthPage.vue";
 import AboutPage from "../pages/AboutPage.vue";
+import MainLayout from "../layouts/MainLayout.vue";
 
 const routes = [
     {
         path: "/",
-        component: Layout,
+        component: MainLayout,
         children: [
             {
                 path: "home",
