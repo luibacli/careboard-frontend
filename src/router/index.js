@@ -4,6 +4,9 @@ import HomePage from "../pages/HomePage.vue";
 import AuthPage from "../pages/AuthPage.vue";
 import AboutPage from "../pages/AboutPage.vue";
 import MainLayout from "../layouts/MainLayout.vue";
+import LuzonPage from "../pages/LuzonPage.vue";
+import MindanaoPage from "../pages/MindanaoPage.vue";
+import VisayasPage from "../pages/VisayasPage.vue";
 
 const routes = [
     {
@@ -11,11 +14,27 @@ const routes = [
         component: MainLayout,
         children: [
             {
-                path: "home",
+                path: "/",
                 name: "Home",
                 component: HomePage
             },
-                 {
+               {
+                path: "luzon",
+                name: "Luzon",
+                component: LuzonPage
+            },
+            {
+                path: "mindanao",
+                name: "Mindanao",
+                component: MindanaoPage
+            },
+            {
+                path: "visayas",
+                name: "Visayas",
+                component: VisayasPage
+            },
+              
+             {
                 path: "about",
                 name: "About",
                 component: AboutPage

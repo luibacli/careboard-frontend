@@ -32,16 +32,19 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import Menubar from "primevue/menubar";
 import InputText from "primevue/inputtext";
 import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
 
+const router = useRouter();
+
 const items = ref([
-    { label: 'Dashboard', icon: 'pi pi-chart-bar' },
-    { label: 'Luzon' },
-    { label: 'Visayas' },
-    { label: 'Mindanao' },
+    { label: 'Dashboard', icon: 'pi pi-chart-bar', command: () => router.push("/") },
+    { label: 'Luzon', command: () => router.push('/luzon') },
+    { label: 'Visayas', command: () => router.push('/visayas') },
+    { label: 'Mindanao', command: () => router.push('/mindanao') },
 ]);
 
 const profileMenuRef = ref();
