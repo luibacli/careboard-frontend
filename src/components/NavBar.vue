@@ -49,7 +49,7 @@ const items = ref([
     { label: 'Luzon', command: () => router.push('/luzon') },
     { label: 'Visayas', command: () => router.push('/visayas') },
     { label: 'Mindanao', command: () => router.push('/mindanao') },
-    { label: 'Caregroups', command: () => router.push('/mindanao') },
+    { label: 'Caregroups', command: () => router.push('/caregroups') },
 ]);
 
 const profileMenuRef = ref();
