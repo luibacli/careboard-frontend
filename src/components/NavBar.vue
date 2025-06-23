@@ -31,12 +31,16 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "../stores/authStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Menubar from "primevue/menubar";
 import InputText from "primevue/inputtext";
 import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
+
+const authStore = useAuthStore();
+const { logout } = authStore;
 
 const router = useRouter();
 
@@ -65,7 +69,9 @@ const profileMenuItems = [
     {
         label: 'Logout',
         icon: 'pi pi-sign-out',
-        command: () => logout()
+        command: () => {
+            logout();
+        }
     }
 ];
 
@@ -73,9 +79,7 @@ function onAvatarClick(event) {
     profileMenuRef.value.toggle(event);
 }
 
-function logout() {
-    // Add logout logic here
-}
+
 </script>
 
 <style scoped>
