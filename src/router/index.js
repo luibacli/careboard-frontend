@@ -7,6 +7,7 @@ import MainLayout from "../layouts/MainLayout.vue";
 import LuzonPage from "../pages/LuzonPage.vue";
 import MindanaoPage from "../pages/MindanaoPage.vue";
 import VisayasPage from "../pages/VisayasPage.vue";
+import CareGroups from "../pages/CareGroups.vue";
 
 const routes = [
     {
@@ -32,6 +33,11 @@ const routes = [
                 path: "visayas",
                 name: "Visayas",
                 component: VisayasPage
+            },
+            {
+                path: "caregroups",
+                name: "CareGroups",
+                component: CareGroups
             },
               
              {
