@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100">
+
     <!-- Global NavBar -->
     <NavBar />
 
@@ -13,6 +14,8 @@
 
 <script setup>
 import NavBar from '../components/NavBar.vue'
+
+
 </script>
 
 

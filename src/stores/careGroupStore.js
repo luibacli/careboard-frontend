@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import api from "../lib/axios";
 
+
+
 export const useCareGroupStore = defineStore("careGroup", {
     state: () => ({
         careGroups: [],
@@ -15,12 +17,20 @@ export const useCareGroupStore = defineStore("careGroup", {
              */
             main: "Luzon", // Default to "Luzon"
             status: "active", // Default status
-        },  
+        },
+        dialogVisible: false,
+        selectedRegion: null,
+        regions: [
+            { label: "Luzon", value: "Luzon" },
+            { label: "Visayas", value: "Visayas" },
+            { label: "Mindanao", value: "Mindanao" },
+        ]
     }),
     actions: {
         async fetchCareGroups() {
             const res = await api.get("/caregroups");
             this.careGroups = res.data;
+            console.log("Fetched care groups:", this.careGroups);
             return this.careGroups;
         },
         async getCareGroup(id) {
@@ -50,15 +60,20 @@ export const useCareGroupStore = defineStore("careGroup", {
             return res.data;
         },
         async createCareGroup() {
-            this.validateMainField();
             try {
+                if (!this.careGroupForm.client_name || !this.careGroupForm.address || !this.careGroupForm.city || !this.careGroupForm.province || !this.careGroupForm.main) {
+                    throw new Error("All fields are required."); 
+                }
                 const res = await api.post("/caregroups", this.careGroupForm);
                 this.careGroups.push(res.data);
                 this.resetCareGroupForm();
-                return res.data;
+                this.dialogVisible = false;
+                console.log("Care group created:", res.data);
+                return { success: true, data: res.data };
             } catch (error) {
-                // Optionally handle error (e.g., show notification)
-                throw error;
+                console.error("Failed to create care group:", error);
+                console.error("Backend response:", error.response?.data); // 👈 Add this line
+                return { success: false, error };
             }
         },
         async updateCareGroup(id) {
