@@ -6,16 +6,33 @@
     <p class="text-2xl font-bold">All Caregroups</p>
 
     <div>
-       
-        <Select v-model="selectedRegion" :options="regions" optionLabel="label"
-                placeholder="Filter by Main Region" class="w-60 mr-2" />
+        <InputText
+  v-model="searchQuery"
+  placeholder="Search by client name"
+  class="w-72 mr-2 border-gray-300 focus:border-blue-500"
+  clearable
+/>
+
+        <Select
+  v-model="selectedRegion"
+  :options="regions"
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Filter by Main Region"
+  class="w-60 mr-2"
+/>
         <Button label="Add CareGroup" icon="pi pi-plus" class="p-button-success mr-2"  @click="dialogVisible = true"/>
-        <Button label="Refresh" icon="pi pi-refresh" class="p-button-secondary" @click="show"/>
+        <Button
+  label="Refresh"
+  icon="pi pi-refresh"
+  class="p-button-secondary"
+  @click="refresh"
+/>
     </div>
 </div>
 <!-- Dialog for CareGroup Creation -->
  <Dialog v-model:visible="dialogVisible"  header="Create CareGroup" modal :style="{ width: '50vw' }">
-    <Form v-slot="$form" :careGroupForm="careGroupForm" @submit="create">
+    <Form v-slot="$form" :resolver="resolver" :careGroupForm="careGroupForm" @submit="create">
         <div class="flex items-center gap-4 mb-4">
        <label for="name" class="font-semibold w-24">Client Name</label>
        <InputText id="name" class="flex-auto" autocomplete="off" v-model="careGroupForm.client_name" />
@@ -48,15 +65,52 @@
  </Dialog>
 
 <!-- Table for caregroups here -->
-<div class="bg-white shadow-md rounded-lg p-4">
-    <p class="text-gray-600">Caregroups will be listed here.</p>
-</div>
+<DataTable
+  :value="careGroups"
+  :loading="loading"
+  class="w-full mt-4"
+  stripedRows
+  paginator
+  :rows="10"
+>
+  <Column field="client_name" header="Client Name" sortable />
+  <Column field="address" header="Address" sortable />
+  <Column field="city" header="City" sortable />
+  <Column field="province" header="Province" sortable />
+  <Column field="main" header="Main Region" sortable />
+
+  <Column header="Status">
+    <template #body="slotProps">
+      <Tag 
+        :value="slotProps.data.status" 
+        :severity="slotProps.data.status === 'active' ? 'success' : 'danger'" 
+      />
+    </template>
+  </Column>
+
+  <template #empty>
+    <div class="text-center text-gray-500 py-6">
+      No care groups found. Click "Add CareGroup" to create your first one.
+    </div>
+  </template>
+
+  <template #loading>
+    <div class="flex flex-col items-center justify-center py-8 text-blue-500">
+      <i class="pi pi-spin pi-spinner text-4xl mb-2"></i>
+      <span>Loading care groups...</span>
+    </div>
+  </template>
+</DataTable>
+
+
+
+
 
 
  </template>
  
  <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button'
 import Message from 'primevue/message';
@@ -70,25 +124,31 @@ import Toast from 'primevue/toast';
 
 const toast = useToast();
 const careGroupStore = useCareGroupStore();
-const { fetchCareGroups, createCareGroup } = careGroupStore;
-const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible } = storeToRefs(careGroupStore);
+const { fetchCareGroups, createCareGroup, fetchCareGroupByMain } = careGroupStore;
+const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible, loading } = storeToRefs(careGroupStore);
 
 
 
 const resolver = ref(zodResolver(
-    z.object({
-        clien_name: z.string().min(1, 'Name is required'),
-        address: z.string().min(1, 'Address is required'),
-        city: z.string().min(1, 'City is required'),
-        province: z.string().min(1, 'Province is required'),
-        region: z.string().min(1, 'Region is required')
-    })
+  z.object({
+    client_name: z.string().min(1, 'Client Name is required'),
+    address: z.string().min(1, 'Address is required'),
+    city: z.string().min(1, 'City is required'),
+    province: z.string().min(1, 'Province is required'),
+    main: z.string().min(1, 'Main region is required')
+  })
 ));
 
-const show = () => {
-    toast.add({ severity: 'info', summary: 'Info', detail: 'Message Content', life: 3000 });
+const refresh = async () => {
+  selectedRegion.value = null; // reset filter
+  await fetchCareGroups();
+  toast.add({
+    severity: "success",
+    summary: "Refreshed",
+    detail: "Caregroups reloaded.",
+    life: 3000,
+  });
 };
-
 
 const create = async () => {
     const result = await createCareGroup();
@@ -99,7 +159,29 @@ const create = async () => {
     }
 };
 
-onMounted(() => {
-    fetchCareGroups();
+
+const searchQuery = ref("");
+
+
+watch([searchQuery, selectedRegion], ([newSearch, newRegion]) => {
+  if (newSearch || newRegion) {
+    careGroupStore.filterCareGroups(newSearch, newRegion);
+  } else {
+    careGroupStore.loading = true;
+    careGroupStore.careGroups = [];
+    setTimeout(() => {
+      careGroupStore.careGroups = careGroupStore.allCareGroups;
+      careGroupStore.loading = false;
+    }, 300);
+  }
 });
+
+
+
+
+
+onMounted(async () => {
+    await fetchCareGroups();
+});
+
  </script>

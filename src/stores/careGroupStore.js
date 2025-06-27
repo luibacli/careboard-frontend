@@ -6,6 +6,7 @@ import api from "../lib/axios";
 export const useCareGroupStore = defineStore("careGroup", {
     state: () => ({
         careGroups: [],
+        allCareGroups: [], 
         careGroupForm: {
             client_name: "",
             address: "",
@@ -20,6 +21,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         },
         dialogVisible: false,
         selectedRegion: null,
+        loading: false,
         regions: [
             { label: "Luzon", value: "Luzon" },
             { label: "Visayas", value: "Visayas" },
@@ -28,11 +30,20 @@ export const useCareGroupStore = defineStore("careGroup", {
     }),
     actions: {
         async fetchCareGroups() {
+            this.loading = true;
+            this.careGroups = [];
+          
             const res = await api.get("/caregroups");
-            this.careGroups = res.data;
-            console.log("Fetched care groups:", this.careGroups);
-            return this.careGroups;
-        },
+          
+            // Optional delay to make the spinner visible
+            setTimeout(() => {
+              this.allCareGroups = res.data;
+              this.careGroups = res.data;
+              this.loading = false;
+            }, 300);
+          },
+          
+          
         async getCareGroup(id) {
             try {
                 const res = await api.get(`/caregroups/${id}`);
@@ -42,15 +53,45 @@ export const useCareGroupStore = defineStore("careGroup", {
                 return null;
             }
         },
-        async fetchCareGroupByMain(main) {
-            const allowed = ["Luzon", "Visayas", "Mindanao"];
-
-            if (!allowed.includes(main)) {
-                throw new Error("Invalid value for 'main' field.");
+        filterCareGroups(searchTerm, mainRegion) {
+            this.loading = true;
+            this.careGroups = [];
+          
+            let results = this.allCareGroups;
+          
+            if (mainRegion) {
+              const allowed = ["Luzon", "Visayas", "Mindanao"];
+              if (!allowed.includes(mainRegion)) {
+                throw new Error("Invalid region");
+              }
+              results = results.filter(cg => cg.main === mainRegion);
             }
-            const res = await api.get(`/caregroups?main=${main}`);
-            return res.data;
-        },
+          
+            if (searchTerm) {
+              const lowerSearch = searchTerm.toLowerCase();
+              results = results.filter(cg => cg.client_name.toLowerCase().includes(lowerSearch));
+            }
+          
+            // Delay setting the results so the spinner shows
+            setTimeout(() => {
+              this.careGroups = results;
+              this.loading = false;
+            }, 300);
+          },
+          
+          
+          
+        filterCareGroupsByMain(main) {
+          
+            const allowed = ["Luzon", "Visayas", "Mindanao"];
+            if (!allowed.includes(main)) {
+              throw new Error("Invalid value for 'main' field.");
+            }
+            this.careGroups = this.allCareGroups.filter(cg => cg.main === main);
+   
+          },
+          
+          
         async fetchCareGroupByStatus(status) {
             const allowed = ["active", "inactive"];
             if (!allowed.includes(status)) {
