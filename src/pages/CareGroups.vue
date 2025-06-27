@@ -88,6 +88,22 @@
     </template>
   </Column>
 
+  <Column header="Actions" style="width: 180px;">
+  <template #body="slotProps">
+    <Button 
+      icon="pi pi-pencil"
+      class="p-button-text p-button-sm text-primary"
+      @click="editCareGroup(slotProps.data)"
+    />
+    <Button 
+      icon="pi pi-trash"
+      class="p-button-text p-button-sm text-red-500"
+      @click="removeCareGroup(slotProps.data._id)"
+    />
+  </template>
+</Column>
+
+
   <template #empty>
     <div class="text-center text-gray-500 py-6">
       No care groups found. Click "Add CareGroup" to create your first one.
@@ -124,7 +140,7 @@ import Toast from 'primevue/toast';
 
 const toast = useToast();
 const careGroupStore = useCareGroupStore();
-const { fetchCareGroups, createCareGroup, fetchCareGroupByMain } = careGroupStore;
+const { fetchCareGroups, createCareGroup, fetchCareGroupByMain, deleteCareGroup } = careGroupStore;
 const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible, loading } = storeToRefs(careGroupStore);
 
 
@@ -158,6 +174,34 @@ const create = async () => {
         toast.add({ severity: 'error', summary: 'Error creating caregroup', life: 3000 });
     }
 };
+
+const editCareGroup = (careGroup) => {
+  // Populate the form with the selected care group
+  careGroupForm.value = { ...careGroup };
+  dialogVisible.value = true;
+};
+
+const removeCareGroup = async (id) => {
+  if (confirm("Are you sure you want to delete this care group?")) {
+    try {
+      await deleteCareGroup(id);
+      toast.add({
+        severity: "success",
+        summary: "Deleted",
+        detail: "Care group deleted successfully.",
+        life: 3000,
+      });
+    } catch (error) {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to delete care group.",
+        life: 3000,
+      });
+    }
+  }
+};
+
 
 
 const searchQuery = ref("");

@@ -39,7 +39,8 @@ export const useCareGroupStore = defineStore("careGroup", {
             setTimeout(() => {
               this.allCareGroups = res.data;
               this.careGroups = res.data;
-              this.loading = false;
+                this.loading = false;
+                console.log("Care groups fetched:", res.data);
             }, 300);
           },
           
