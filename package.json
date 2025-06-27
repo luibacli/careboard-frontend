@@ -14,6 +14,7 @@
     "@tailwindcss/postcss": "^4.1.10",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.10.0",
+    "chart.js": "^4.5.0",
     "pinia": "^3.0.3",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",

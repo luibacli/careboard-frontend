@@ -8,6 +8,7 @@ import ToastService from 'primevue/toastservice';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column'
 import Tag from 'primevue/tag';
+import Chart from 'primevue/chart'
 
 
 import { createPinia } from 'pinia'
@@ -31,5 +32,6 @@ app.use(router)
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Tag', Tag);
+app.component('Chart', Chart)
 
 app.mount('#app')
