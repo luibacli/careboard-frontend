@@ -24,15 +24,11 @@ const monthLabels = [
   "December"
 ];
 
-// Compute FPE counts per month
 const fpeCounts = computed(() => {
   const countsByMonth = {};
   if (summaryStore.summaryData?.monthlyFpeFpc) {
     summaryStore.summaryData.monthlyFpeFpc.forEach(item => {
-      if (
-        item._id.tranche === "1" &&
-        item._id.year == selectedYear.value
-      ) {
+      if (item._id.tranche === "1" && item._id.year == selectedYear.value) {
         countsByMonth[item._id.month] = item.count;
       }
     });
@@ -40,15 +36,11 @@ const fpeCounts = computed(() => {
   return Array.from({ length: 12 }, (_, i) => countsByMonth[i + 1] || 0);
 });
 
-// Compute FPC counts per month
 const fpcCounts = computed(() => {
   const countsByMonth = {};
   if (summaryStore.summaryData?.monthlyFpeFpc) {
     summaryStore.summaryData.monthlyFpeFpc.forEach(item => {
-      if (
-        item._id.tranche === "2" &&
-        item._id.year == selectedYear.value
-      ) {
+      if (item._id.tranche === "2" && item._id.year == selectedYear.value) {
         countsByMonth[item._id.month] = item.count;
       }
     });
@@ -58,17 +50,30 @@ const fpcCounts = computed(() => {
 
 const chartYear = computed(() => selectedYear.value);
 
-// On load: load all data
+// FPE/FPC totals
+const fpeCountTotal = computed(() =>
+  summaryStore.summaryData?.fpe?.[0]?.count || 0
+);
+const fpcCountTotal = computed(() =>
+  summaryStore.summaryData?.fpc?.[0]?.count || 0
+);
+
+// Labs/Meds totals
+const labsCountTotal = computed(() =>
+  summaryStore.summaryData?.labs?.[0]?.count || 0
+);
+const medsCountTotal = computed(() =>
+  summaryStore.summaryData?.meds?.[0]?.count || 0
+);
+
 onMounted(() => {
   summaryStore.loadSummary();
 });
 
-// Load data with filters
 const applyFilter = () => {
   if (startDate.value && endDate.value) {
     summaryStore.loadSummary(startDate.value, endDate.value);
   } else {
-    // If date filters are cleared, reload everything
     summaryStore.loadSummary();
   }
 };
@@ -116,36 +121,61 @@ const applyFilter = () => {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-white rounded shadow p-4">
           <h2 class="text-sm text-gray-500">FPE Processed</h2>
-          <p class="text-xl font-bold">
-            {{ summaryStore.summaryData?.fpe?.[0]?.count || 0 }}
-          </p>
+          <p class="text-xl font-bold">{{ fpeCountTotal }}</p>
         </div>
         <div class="bg-white rounded shadow p-4">
           <h2 class="text-sm text-gray-500">FPC Processed</h2>
-          <p class="text-xl font-bold">
-            {{ summaryStore.summaryData?.fpc?.[0]?.count || 0 }}
-          </p>
+          <p class="text-xl font-bold">{{ fpcCountTotal }}</p>
         </div>
         <div class="bg-white rounded shadow p-4">
           <h2 class="text-sm text-gray-500">Labs Provided</h2>
-          <p class="text-xl font-bold">
-            {{ summaryStore.summaryData?.labs?.[0]?.count || 0 }}
-          </p>
+          <p class="text-xl font-bold">{{ labsCountTotal }}</p>
         </div>
         <div class="bg-white rounded shadow p-4">
           <h2 class="text-sm text-gray-500">Meds Provided</h2>
-          <p class="text-xl font-bold">
-            {{ summaryStore.summaryData?.meds?.[0]?.count || 0 }}
-          </p>
+          <p class="text-xl font-bold">{{ medsCountTotal }}</p>
+        </div>
+      </div>
+
+      <!-- Pie Charts Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+        <!-- FPE vs FPC Pie Chart -->
+        <div class="bg-white rounded shadow p-4">
+          <h2 class="text-sm text-gray-500 mb-2">FPE vs FPC Distribution</h2>
+          <Chart
+            type="pie"
+            :data="{
+              labels: ['FPE', 'FPC'],
+              datasets: [
+                {
+                  data: [fpeCountTotal, fpcCountTotal],
+                  backgroundColor: ['#3b82f6', '#f59e0b']
+                }
+              ]
+            }"
+          />
+        </div>
+
+        <!-- Labs vs Meds Pie Chart -->
+        <div class="bg-white rounded shadow p-4">
+          <h2 class="text-sm text-gray-500 mb-2">Labs vs Meds Provided</h2>
+          <Chart
+            type="pie"
+            :data="{
+              labels: ['Labs', 'Meds'],
+              datasets: [
+                {
+                  data: [labsCountTotal, medsCountTotal],
+                  backgroundColor: ['#10b981', '#f97316']
+                }
+              ]
+            }"
+          />
         </div>
       </div>
 
       <!-- Monthly FPE & FPC Chart -->
-      <!-- Only show if no date filter is active -->
-      <div
-        v-if="!startDate && !endDate"
-        class="bg-white rounded shadow p-4 mt-8"
-      >
+      <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8">
         <div class="flex flex-col sm:flex-row justify-between items-end mb-2">
           <h2 class="text-sm text-gray-500">Monthly FPE & FPC</h2>
           <div>
