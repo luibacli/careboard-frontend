@@ -32,7 +32,7 @@
 </div>
 <!-- Dialog for CareGroup Creation -->
  <Dialog v-model:visible="dialogVisible"  header="Create CareGroup" modal :style="{ width: '50vw' }">
-    <Form v-slot="$form" :resolver="resolver" :careGroupForm="careGroupForm" @submit="create">
+    <Form v-slot="$form" :resolver="resolver" :careGroupForm="careGroupForm" @submit="save">
         <div class="flex items-center gap-4 mb-4">
        <label for="name" class="font-semibold w-24">Client Name</label>
        <InputText id="name" class="flex-auto" autocomplete="off" v-model="careGroupForm.client_name" />
@@ -56,7 +56,7 @@
                     optionValue="value" placeholder="Select Region" class="w-50" />
         </div>
          <div>
-            <Button label="Create" icon="pi pi-check" class="p-button-success ml-2" type="submit"/>
+            <Button label="Save" icon="pi pi-check" class="p-button-success ml-2" type="submit"/>
         </div>
       
     </div>
@@ -166,18 +166,63 @@ const refresh = async () => {
   });
 };
 
-const create = async () => {
+const save = async () => {
+  saving.value = true;
+
+  if (careGroupForm.value._id) {
+    // Updating
+    try {
+      await careGroupStore.updateCareGroup(careGroupForm.value._id);
+      toast.add({
+        severity: "success",
+        summary: "Updated",
+        detail: "Care group updated successfully.",
+        life: 3000,
+      });
+      await fetchCareGroups(); // ✅ Refetch all records
+      dialogVisible.value = false;
+      careGroupStore.resetCareGroupForm();
+    } catch (error) {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update care group.",
+        life: 3000,
+      });
+    } finally {
+      saving.value = false;
+    }
+  } else {
+    // Creating
     const result = await createCareGroup();
     if (result.success) {
-        toast.add({ severity: 'success', summary: 'Caregroup created', life: 3000 });
+      toast.add({
+        severity: "success",
+        summary: "Created",
+        detail: "Care group created successfully.",
+        life: 3000,
+      });
+      await fetchCareGroups(); // ✅ Refetch all records
+      dialogVisible.value = false;
+      careGroupStore.resetCareGroupForm();
     } else {
-        toast.add({ severity: 'error', summary: 'Error creating caregroup', life: 3000 });
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to create care group.",
+        life: 3000,
+      });
     }
+    saving.value = false;
+  }
 };
+
+
 
 const editCareGroup = (careGroup) => {
   // Populate the form with the selected care group
-  careGroupForm.value = { ...careGroup };
+    careGroupForm.value = { ...careGroup };
+  console.log("Editing care group:", careGroupForm.value);
   dialogVisible.value = true;
 };
 
@@ -205,6 +250,7 @@ const removeCareGroup = async (id) => {
 
 
 const searchQuery = ref("");
+const saving = ref(false);
 
 
 watch([searchQuery, selectedRegion], ([newSearch, newRegion]) => {

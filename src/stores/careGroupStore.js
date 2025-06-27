@@ -8,17 +8,15 @@ export const useCareGroupStore = defineStore("careGroup", {
         careGroups: [],
         allCareGroups: [], 
         careGroupForm: {
+            id: null,
             client_name: "",
             address: "",
             city: "",
             province: "",
-            /**
-             * Allowed values: "Luzon", "Visayas", "Mindanao"
-             * @type {"Luzon"|"Visayas"|"Mindanao"|""}
-             */
-            main: "Luzon", // Default to "Luzon"
-            status: "active", // Default status
-        },
+            main: "Luzon",
+            status: "active"
+          },
+          
         dialogVisible: false,
         selectedRegion: null,
         loading: false,
@@ -150,13 +148,15 @@ export const useCareGroupStore = defineStore("careGroup", {
         },
         resetCareGroupForm() {
             this.careGroupForm = {
-                client_name: "",
-                address: "",
-                city: "",
-                province: "",
-                main: "Luzon",
-                status: "active",
+              id: null,
+              client_name: "",
+              address: "",
+              city: "",
+              province: "",
+              main: "Luzon",
+              status: "active"
             };
-        }
+          }
+          
     }
 });
