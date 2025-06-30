@@ -236,6 +236,7 @@ const removeCareGroup = async (id) => {
         detail: "Care group deleted successfully.",
         life: 3000,
       });
+      await fetchCareGroups(); // ✅ Refetch all records
     } catch (error) {
       toast.add({
         severity: "error",
