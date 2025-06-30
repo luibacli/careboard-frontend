@@ -48,17 +48,12 @@ const fpcCounts = computed(() => {
   return Array.from({ length: 12 }, (_, i) => countsByMonth[i + 1] || 0);
 });
 
-const chartYear = computed(() => selectedYear.value);
-
-// FPE/FPC totals
 const fpeCountTotal = computed(() =>
   summaryStore.summaryData?.fpe?.[0]?.count || 0
 );
 const fpcCountTotal = computed(() =>
   summaryStore.summaryData?.fpc?.[0]?.count || 0
 );
-
-// Labs/Meds totals
 const labsCountTotal = computed(() =>
   summaryStore.summaryData?.labs?.[0]?.count || 0
 );
@@ -119,63 +114,75 @@ const applyFilter = () => {
     <div v-else-if="summaryStore.summaryData">
       <!-- KPI Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-sm text-gray-500">FPE Processed</h2>
-          <p class="text-xl font-bold">{{ fpeCountTotal }}</p>
-        </div>
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-sm text-gray-500">FPC Processed</h2>
-          <p class="text-xl font-bold">{{ fpcCountTotal }}</p>
-        </div>
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-sm text-gray-500">Labs Provided</h2>
-          <p class="text-xl font-bold">{{ labsCountTotal }}</p>
-        </div>
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-sm text-gray-500">Meds Provided</h2>
-          <p class="text-xl font-bold">{{ medsCountTotal }}</p>
+  <!-- Konsulta Registered -->
+  <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
+          <p class="text-2xl font-bold">{{ fpeCountTotal }}</p>
         </div>
       </div>
+    </template>
+  </Card>
 
-      <!-- Pie Charts Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-        <!-- FPE vs FPC Pie Chart -->
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-sm text-gray-500 mb-2">FPE vs FPC Distribution</h2>
-          <Chart
-            type="pie"
-            :data="{
-              labels: ['FPE', 'FPC'],
-              datasets: [
-                {
-                  data: [fpeCountTotal, fpcCountTotal],
-                  backgroundColor: ['#3b82f6', '#f59e0b']
-                }
-              ]
-            }"
-          />
-        </div>
-
-        <!-- Labs vs Meds Pie Chart -->
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-sm text-gray-500 mb-2">Labs vs Meds Provided</h2>
-          <Chart
-            type="pie"
-            :data="{
-              labels: ['Labs', 'Meds'],
-              datasets: [
-                {
-                  data: [labsCountTotal, medsCountTotal],
-                  backgroundColor: ['#10b981', '#f97316']
-                }
-              ]
-            }"
-          />
+  <!-- First Patient Encounter -->
+  <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-user-edit text-green-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
+          <p class="text-2xl font-bold">{{ fpeCountTotal }}</p>
         </div>
       </div>
+    </template>
+  </Card>
 
-      <!-- Monthly FPE & FPC Chart -->
-      <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8">
+  <!-- Consultation -->
+  <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-comments text-purple-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
+          <p class="text-2xl font-bold">{{ fpcCountTotal }}</p>
+        </div>
+      </div>
+    </template>
+  </Card>
+
+  <!-- Laboratories Provided -->
+  <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-shield text-yellow-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">Laboratories Provided</h2>
+          <p class="text-2xl font-bold">{{ labsCountTotal }}</p>
+        </div>
+      </div>
+    </template>
+  </Card>
+
+  <!-- Medicines Provided -->
+  <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-heart-fill text-red-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
+          <p class="text-2xl font-bold">{{ medsCountTotal }}</p>
+        </div>
+      </div>
+    </template>
+  </Card>
+</div>
+
+
+          <!-- Monthly FPE & FPC Chart -->
+          <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8">
         <div class="flex flex-col sm:flex-row justify-between items-end mb-2">
           <h2 class="text-sm text-gray-500">Monthly FPE & FPC</h2>
           <div>
@@ -210,8 +217,50 @@ const applyFilter = () => {
               }
             ]
           }"
+          style="width: 1000px; height: 500px;"
         />
       </div>
+
+      <!-- Pie Charts Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+        <!-- FPE vs FPC Pie Chart -->
+        <div class="bg-white rounded shadow p-4 flex flex-col items-center">
+          <h2 class="text-sm text-gray-500 mb-2">FPE vs FPC Distribution</h2>
+          <Chart
+            type="pie"
+            :data="{
+              labels: ['FPE', 'FPC'],
+              datasets: [
+                {
+                  data: [fpeCountTotal, fpcCountTotal],
+                  backgroundColor: ['#3b82f6', '#f59e0b']
+                }
+              ]
+            }"
+            style="max-width: 300px; height: 300px;"
+          />
+        </div>
+
+        <!-- Labs vs Meds Pie Chart -->
+        <div class="bg-white rounded shadow p-4 flex flex-col items-center">
+          <h2 class="text-sm text-gray-500 mb-2">Labs vs Meds Provided</h2>
+          <Chart
+            type="pie"
+            :data="{
+              labels: ['Labs', 'Meds'],
+              datasets: [
+                {
+                  data: [labsCountTotal, medsCountTotal],
+                  backgroundColor: ['#10b981', '#f97316']
+                }
+              ]
+            }"
+            style="max-width: 300px; height: 300px;"
+          />
+        </div>
+      </div>
+
+  
     </div>
 
     <!-- No data -->

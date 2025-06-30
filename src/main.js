@@ -9,6 +9,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column'
 import Tag from 'primevue/tag';
 import Chart from 'primevue/chart'
+import { Card } from 'primevue'
 
 
 import { createPinia } from 'pinia'
@@ -32,6 +33,7 @@ app.use(router)
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Tag', Tag);
-app.component('Chart', Chart)
+app.component('Chart', Chart);
+app.component('Card', Card);
 
 app.mount('#app')
