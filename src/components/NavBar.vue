@@ -76,9 +76,10 @@
   const toast = useToast();
   
   const items = ref([
-    { label: 'Dashboard', icon: 'pi pi-chart-bar', command: () => router.push("/") },
+    { label: 'Home', icon: 'pi pi-home',  command: () => router.push("/") },
     {
-      label: 'Reports',
+      label: 'Dashboards',
+      icon: 'pi pi-chart-bar',
       items: [
         {
           label: "Luzon",
@@ -98,8 +99,10 @@
         
       ]
      },
-    { label: 'Caregroups', command: () => router.push('/caregroups') },
-    { label: 'Encounters', command: () => router.push('/caregroups') },
+    { label: 'Caregroups', icon: 'pi pi-building', command: () => router.push('/caregroups') },
+    { label: 'Encounters', icon: 'pi pi-warehouse', },
+    { label: 'Master List', icon: 'pi pi-users', },
+    { label: 'Users', icon: 'pi pi-user-plus'},
     
   ]);
   

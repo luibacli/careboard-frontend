@@ -76,10 +76,11 @@ const applyFilter = () => {
 
 <template>
   <div class="p-6 space-y-6">
-    <h1 class="text-2xl font-semibold">Dashboard Summary</h1>
+    <p class="text-3xl font-bold">Dashboard Summary</p>
 
     <!-- Date Filters -->
-    <div class="flex flex-col sm:flex-row gap-4 items-end">
+    <div class="flex flex-col sm:flex-row gap-4 items-end bg-white p-3">
+ 
       <div>
         <label class="block text-sm text-gray-500 mb-1">Start Date</label>
         <input
