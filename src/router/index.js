@@ -8,6 +8,7 @@ import LuzonPage from "../pages/LuzonPage.vue";
 import MindanaoPage from "../pages/MindanaoPage.vue";
 import VisayasPage from "../pages/VisayasPage.vue";
 import CareGroups from "../pages/CareGroups.vue";
+import OnboardedPage from "../pages/OnboardedPage.vue";
 
 const routes = [
     {
@@ -39,6 +40,12 @@ const routes = [
                 name: "CareGroups",
                 component: CareGroups
             },
+            {
+                path: "onboarded",
+                name: "onboarded",
+                component: OnboardedPage
+            },
+
               
              {
                 path: "about",

@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import api from "../lib/axios";
 
 
-
 export const useCareGroupStore = defineStore("careGroup", {
     state: () => ({
         careGroups: [],

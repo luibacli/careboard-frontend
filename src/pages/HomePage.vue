@@ -1,8 +1,12 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useSummaryStore } from '../stores/summaryStore';
+import { useOnboardedStore } from '../stores/onBoarded';
 
 const summaryStore = useSummaryStore();
+const onBoardedStore = useOnboardedStore();
+
 
 const startDate = ref('');
 const endDate = ref('');
@@ -63,6 +67,7 @@ const medsCountTotal = computed(() =>
 
 onMounted(() => {
   summaryStore.loadSummary();
+  onBoardedStore.fetchPatients();
 });
 
 const applyFilter = () => {
@@ -122,7 +127,7 @@ const applyFilter = () => {
         <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
         <div>
           <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-          <p class="text-2xl font-bold">{{ fpeCountTotal }}</p>
+          <p class="text-2xl font-bold">{{ onBoardedStore.totalPatients }}</p>
         </div>
       </div>
     </template>

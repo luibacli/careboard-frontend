@@ -6,7 +6,9 @@ export const useSummaryStore = defineStore('summary', {
   state: () => ({
     summaryData: null,
     loading: false,
-    error: null
+    error: null,
+    totalRegistered: 0,
+    patients: [],
   }),
 
   actions: {
@@ -27,7 +29,7 @@ export const useSummaryStore = defineStore('summary', {
         } finally {
           this.loading = false;
         }
-      }
-      
+    },
+    
   }
 })
