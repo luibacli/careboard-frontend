@@ -6,7 +6,9 @@ export const useOnboardedStore = defineStore('onboarded', {
     patients: [],
     totalPatients: 0,
     loading: false,
-    error: null
+    error: null,
+    uploading: false,
+    progress: 0,
   }),
 
   actions: {
@@ -27,7 +29,33 @@ export const useOnboardedStore = defineStore('onboarded', {
         this.error = 'Failed to fetch patients';
       } finally {
         this.loading = false;
+      }       
+    },
+    async handleFileUpload(event) {
+      const file = event.target.files[0],
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      this.uploading = true;
+      this.progress = 0;
+
+      try {
+        const response = await api.post("/upload/upload-onboarded", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          onDownloadProgress: (progressEvent) => {
+            if (progressEvent.lengthComputable) {
+              this.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            }
+          }
+        });
+
+        const { inserted, updated, skipped, message } = response.data;
+        
+      } catch (error) {
+        
       }
-    }
+    },
   }
 });
