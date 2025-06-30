@@ -77,16 +77,48 @@
   
   const items = ref([
     { label: 'Dashboard', icon: 'pi pi-chart-bar', command: () => router.push("/") },
-    { label: 'Luzon', command: () => router.push('/luzon') },
-    { label: 'Visayas', command: () => router.push('/visayas') },
-    { label: 'Mindanao', command: () => router.push('/mindanao') },
+    {
+      label: 'Reports',
+      items: [
+        {
+          label: "Luzon",
+          command: () => router.push('/luzon')
+        },
+        {
+          label: "Visayas",
+          command: () => router.push('/visayas')
+        },
+        {
+          label: "Mindanao",
+          command: () => router.push('/mindanao')
+        },
+        {
+          label: "Create Report",
+        }
+        
+      ]
+     },
     { label: 'Caregroups', command: () => router.push('/caregroups') },
+    { label: 'Encounters', command: () => router.push('/caregroups') },
+    
   ]);
   
   const profileMenuRef = ref();
   const fileInput = ref();
   const uploading = ref(false);
   const progress = ref(0);
+
+  // Define profile menu items
+  const profileMenuItems = [
+    {
+      label: 'Logout',
+      icon: 'pi pi-sign-out',
+      command: () => {
+        logout();
+        router.push('/login');
+      }
+    }
+  ];
   
   function onAvatarClick(event) {
     profileMenuRef.value.toggle(event);
