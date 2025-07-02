@@ -8,8 +8,8 @@ import ToastService from 'primevue/toastservice';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column'
 import Tag from 'primevue/tag';
-import Chart from 'primevue/chart'
-import { Card } from 'primevue'
+import Chart from 'primevue/chart';
+import { Card, Button, Select, InputText } from 'primevue'
 
 
 import { createPinia } from 'pinia'
@@ -35,5 +35,8 @@ app.component('Column', Column);
 app.component('Tag', Tag);
 app.component('Chart', Chart);
 app.component('Card', Card);
+app.component('Button', Button);
+app.component('Select', Select);
+app.component('InputText', InputText);
 
 app.mount('#app')
