@@ -56,7 +56,7 @@ export const useOnboardedStore = defineStore('onboarded', {
         this.totalUsers = response.data.total;
         console.log("Total Users:", this.totalUsers);
       } catch (error) {
-        console.error("Error Fething users", err);
+        console.error("Error Fething users", error);
         this.error = "Failed to fetch patients"
         
       } finally {
