@@ -2,10 +2,12 @@ import { defineStore } from "pinia";
 import api from "../lib/axios";
 
 
+
 export const useCareGroupStore = defineStore("careGroup", {
     state: () => ({
         careGroups: [],
-        allCareGroups: [], 
+        allCareGroups: [],
+        careGroupSummary: null,
         careGroupForm: {
             id: null,
             client_name: "",
@@ -29,6 +31,12 @@ export const useCareGroupStore = defineStore("careGroup", {
         loadingEncounters: false,
         error: null,
     }),
+    getters: {
+        totalFPE: (state) => state.careGroupSummary?.fpe?.[0]?.count || 0,
+        totalFPC: (state) => state.careGroupSummary?.fpc?.[0]?.count || 0,
+        totalLabs: (state) => state.careGroupSummary?.labs?.[0]?.total || 0,
+        totalMeds: (state) => state.careGroupSummary?.meds?.[0]?.total || 0,
+    },
     actions: {
         async fetchCareGroups() {
             this.loading = true;
@@ -64,13 +72,26 @@ export const useCareGroupStore = defineStore("careGroup", {
             try {
               const res = await api.get(`/upload/encounters?clients=${encodeURIComponent(clientName)}`);
                 this.encounters = res.data.data
+                console.log("Client Encounters Total",res.data.total);
             } catch (error) {
               console.error("Failed to fetch encounters:", error);
               throw error;
             } finally {
               this.loading = false;
             }
-          },
+        },
+        
+        async fetchSummaryByClientName(clientName) {
+            this.loading = true;
+            try {
+               const res = await api.get(`/encounters/summary?facility=${encodeURIComponent(clientName)}`);
+                this.careGroupSummary = res.data      
+            } catch (error) {
+                console.error('Failed to fetch client summary', error)
+            } finally {
+                this.loading = false;
+            }
+        },
           
           
         filterCareGroups(searchTerm, mainRegion) {

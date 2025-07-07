@@ -59,11 +59,12 @@ const fpcCountTotal = computed(() =>
   summaryStore.summaryData?.fpc?.[0]?.count || 0
 );
 const labsCountTotal = computed(() =>
-  summaryStore.summaryData?.labs?.[0]?.count || 0
+  summaryStore.summaryData?.labs?.[0]?.total || 0
 );
 const medsCountTotal = computed(() =>
-  summaryStore.summaryData?.meds?.[0]?.count || 0
+  summaryStore.summaryData?.meds?.[0]?.total || 0
 );
+
 
 onMounted(() => {
   summaryStore.loadSummary();
