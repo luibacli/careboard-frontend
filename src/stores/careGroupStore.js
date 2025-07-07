@@ -42,15 +42,33 @@ export const useCareGroupStore = defineStore("careGroup", {
           },
           
           
-        async getCareGroup(id) {
+          async fetchCareGroupById(id) {
+            this.loading = true;
             try {
-                const res = await api.get(`/caregroups/${id}`);
-                return res.data;
+              const res = await api.get(`/caregroups/${id}`);
+              return res.data;
             } catch (error) {
-                console.error("Failed to fetch care group:", error);
-                return null;
+              console.error("Failed to fetch care group:", error);
+              throw error;
+            } finally {
+              this.loading = false;
             }
         },
+          
+        async fetchEncountersByClientName(clientName) {
+            this.loading = true;
+            try {
+              const res = await api.get(`/encounters?client_name=${encodeURIComponent(clientName)}`);
+              return res.data;
+            } catch (error) {
+              console.error("Failed to fetch encounters:", error);
+              throw error;
+            } finally {
+              this.loading = false;
+            }
+          },
+          
+          
         filterCareGroups(searchTerm, mainRegion) {
             this.loading = true;
             this.careGroups = [];
