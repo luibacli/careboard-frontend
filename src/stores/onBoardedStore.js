@@ -26,15 +26,15 @@ export const useOnboardedStore = defineStore('onboarded', {
   }),
 
   actions: {
-    async fetchPatients(page = 1, limit = 50) {
+    async fetchPatients(page = 1, limit = 50, startDate = null, endDate = null) {
       this.loading = true;
       this.error = null;
-
+    
       try {
         const response = await api.get('/upload/onboarded/patients', {
-          params: { page, limit }
+          params: { page, limit, startDate, endDate }
         });
-
+    
         this.patients = response.data.data;
         this.totalPatients = response.data.total;
         console.log("Total Patients", this.totalPatients);
@@ -43,8 +43,9 @@ export const useOnboardedStore = defineStore('onboarded', {
         this.error = 'Failed to fetch patients';
       } finally {
         this.loading = false;
-      }       
+      }
     },
+    
     async fetchUsers(page = 1, limit = 50) {
       this.loading = true;
       this.error = null;

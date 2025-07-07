@@ -74,10 +74,13 @@ onMounted(() => {
 const applyFilter = () => {
   if (startDate.value && endDate.value) {
     summaryStore.loadSummary(startDate.value, endDate.value);
+    onBoardedStore.fetchPatients(1, 50, startDate.value, endDate.value);
   } else {
     summaryStore.loadSummary();
+    onBoardedStore.fetchPatients();
   }
 };
+
 </script>
 
 <template>
