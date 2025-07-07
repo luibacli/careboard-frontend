@@ -10,6 +10,7 @@ import VisayasPage from "../pages/VisayasPage.vue";
 import CareGroups from "../pages/CareGroups.vue";
 import OnboardedPage from "../pages/OnboardedPage.vue";
 import EncountersPage from "../pages/EncountersPage.vue";
+import ClientPage from "../pages/ClientPage.vue";
 
 const routes = [
     {
@@ -40,6 +41,12 @@ const routes = [
                 path: "caregroups",
                 name: "CareGroups",
                 component: CareGroups
+            },
+            {
+                path: "caregroups/:id",
+                name: "Client",
+                component: ClientPage,
+                props: true,
             },
             {
                 path: "encounters",

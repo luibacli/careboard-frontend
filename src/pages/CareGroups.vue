@@ -73,7 +73,17 @@
   paginator
   :rows="10"
 >
-  <Column field="client_name" header="Client Name" sortable />
+<Column header="Client Name" sortable>
+  <template #body="slotProps">
+    <RouterLink
+      :to="`/caregroups/${slotProps.data._id}`"
+      class="text-blue-600 hover:underline"
+    >
+      {{ slotProps.data.client_name }}
+    </RouterLink>
+  </template>
+</Column>
+
   <Column field="address" header="Address" sortable />
   <Column field="city" header="City" sortable />
   <Column field="province" header="Province" sortable />
