@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useSummaryStore } from '../stores/summaryStore';
-import { useOnboardedStore } from '../stores/onBoarded';
+import { useOnboardedStore } from '../stores/onBoardedStore';
 
 const summaryStore = useSummaryStore();
 const onBoardedStore = useOnboardedStore();

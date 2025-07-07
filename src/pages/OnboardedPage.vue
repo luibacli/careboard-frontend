@@ -1,5 +1,9 @@
 <template>
     <Toast />
+
+    <div v-if="uploading" class="mt-2">
+        <ProgressBar :value="progress" showValue>{{ progress }}%</ProgressBar>
+      </div>
     <div class="flex items-center justify-between mb-4 masterlist-header">
     
       
@@ -21,7 +25,7 @@
       placeholder="Filter by User Type"
       class="w-60 mr-2"
     />
-            <Button label="Upload Users" icon="pi pi-upload" class="p-button-success mr-2" @click="triggerFileInput" />
+            <Button label="Upload Users" icon="pi pi-upload" class="p-button-success mr-2" @click="triggerFileInput" :disabled="uploading"/>
                <!-- Hidden File Input -->
             <input
               ref="fileInput"
@@ -57,7 +61,7 @@
       <Column field="gender" header="Gender" sortable />
       <Column field="email" header="Email" sortable />
       <Column field="phone" header="Phone" sortable />
-      <Column header="Status">
+      <Column header="Active">
         <template #body="slotProps">
           <Tag 
             :value="slotProps.data.active" 
@@ -93,8 +97,9 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
-import { useOnboardedStore } from "../stores/onBoarded";
+import { useOnboardedStore } from "../stores/onBoardedStore";
 import { useToast } from "primevue/usetoast";
+import ProgressBar from "primevue/progressbar";
 
 
 
@@ -102,7 +107,7 @@ import { useToast } from "primevue/usetoast";
 const toast = useToast();
 const onBoardedStore = useOnboardedStore()
 const { fetchPatients, uploadFile, filterUsers, fetchUsers } = onBoardedStore
-const {patients, users, allUsers, loading, progress, error, options, selectedUserType, searchQuery} = storeToRefs(onBoardedStore)
+const {patients, users, allUsers, loading, progress, uploading, error, options, selectedUserType, searchQuery} = storeToRefs(onBoardedStore)
 const fileInput = ref(null);
 
 function triggerFileInput() {
@@ -113,7 +118,7 @@ async function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  const result = await uploadStore.uploadFile(file);
+  const result = await uploadFile(file);
 
   if (result.success) {
     toast.add({
