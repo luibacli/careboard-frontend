@@ -82,13 +82,15 @@ import { useCareGroupStore } from "../stores/careGroupStore";
     try {
       // 1. Fetch care group by ID
       const cg = await careGroupStore.fetchCareGroupById(route.params.id);
-      careGroup.value = cg;
+        careGroup.value = cg;
+      console.log(careGroup.value);
   
       // 2. Fetch encounters by client_name
       if (cg.client_name) {
         loadingEncounters.value = true;
         const encs = await careGroupStore.fetchEncountersByClientName(cg.client_name);
-        encounters.value = encs;
+          encounters.value = encs.data;
+        console.log("Client Encounters", encounters.value);
       }
     } catch (err) {
       console.error(err);

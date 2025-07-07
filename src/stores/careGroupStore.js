@@ -58,7 +58,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         async fetchEncountersByClientName(clientName) {
             this.loading = true;
             try {
-              const res = await api.get(`/encounters?client_name=${encodeURIComponent(clientName)}`);
+              const res = await api.get(`/upload/encounters?clients=${encodeURIComponent(clientName)}`);
               return res.data;
             } catch (error) {
               console.error("Failed to fetch encounters:", error);
