@@ -100,7 +100,7 @@
       ]
      },
     { label: 'Caregroups', icon: 'pi pi-building', command: () => router.push('/caregroups') },
-    { label: 'Encounters', icon: 'pi pi-warehouse', },
+    { label: 'Encounters', icon: 'pi pi-warehouse',command: () => router.push('/encounters') },
     { label: 'Master List', icon: 'pi pi-users', command: () => router.push('/onboarded') },
     { label: 'Users', icon: 'pi pi-user-plus'},
     

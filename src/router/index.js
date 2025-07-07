@@ -9,6 +9,7 @@ import MindanaoPage from "../pages/MindanaoPage.vue";
 import VisayasPage from "../pages/VisayasPage.vue";
 import CareGroups from "../pages/CareGroups.vue";
 import OnboardedPage from "../pages/OnboardedPage.vue";
+import EncountersPage from "../pages/EncountersPage.vue";
 
 const routes = [
     {
@@ -39,6 +40,11 @@ const routes = [
                 path: "caregroups",
                 name: "CareGroups",
                 component: CareGroups
+            },
+            {
+                path: "encounters",
+                name: "Encounters",
+                component: EncountersPage
             },
             {
                 path: "onboarded",
