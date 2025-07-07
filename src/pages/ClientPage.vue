@@ -66,39 +66,30 @@
   <script setup>
   import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 import { useCareGroupStore } from "../stores/careGroupStore";
   
   const route = useRoute();
-  const careGroupStore = useCareGroupStore();
+const careGroupStore = useCareGroupStore();
+const {fetchCareGroupById, fetchEncountersByClientName } = careGroupStore;
+const {careGroup, encounters, loading, loadingEncounters, error } = storeToRefs(careGroupStore);
+
   
-  const careGroup = ref(null);
-  const encounters = ref([]);
-  const loading = ref(false);
-  const loadingEncounters = ref(false);
-  const error = ref(null);
-  
-  onMounted(async () => {
-    loading.value = true;
-    try {
-      // 1. Fetch care group by ID
-      const cg = await careGroupStore.fetchCareGroupById(route.params.id);
-        careGroup.value = cg;
+onMounted(async () => {
+  try {
+    // Fetch care group
+      await fetchCareGroupById(route.params.id);
+    console.log("Caregroup Data", careGroup.value);
+
+    // Fetch encounters
+    if (careGroup.value?.client_name) {
+        await fetchEncountersByClientName(careGroup.value.client_name);
       console.log(careGroup.value);
-  
-      // 2. Fetch encounters by client_name
-      if (cg.client_name) {
-        loadingEncounters.value = true;
-        const encs = await careGroupStore.fetchEncountersByClientName(cg.client_name);
-          encounters.value = encs.data;
-        console.log("Client Encounters", encounters.value);
-      }
-    } catch (err) {
-      console.error(err);
-      error.value = "Failed to load care group or encounters.";
-    } finally {
-      loading.value = false;
-      loadingEncounters.value = false;
     }
-  });
+  } catch (err) {
+    console.error(err);
+    error.value = "Failed to load care group or encounters.";
+  }
+});
   </script>
   

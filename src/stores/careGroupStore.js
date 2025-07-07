@@ -23,7 +23,11 @@ export const useCareGroupStore = defineStore("careGroup", {
             { label: "Luzon", value: "Luzon" },
             { label: "Visayas", value: "Visayas" },
             { label: "Mindanao", value: "Mindanao" },
-        ]
+        ],
+        careGroup: null,
+        encounters: [],
+        loadingEncounters: false,
+        error: null,
     }),
     actions: {
         async fetchCareGroups() {
@@ -46,7 +50,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             this.loading = true;
             try {
               const res = await api.get(`/caregroups/${id}`);
-              return res.data;
+              this.careGroup = res.data
             } catch (error) {
               console.error("Failed to fetch care group:", error);
               throw error;
@@ -59,7 +63,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             this.loading = true;
             try {
               const res = await api.get(`/upload/encounters?clients=${encodeURIComponent(clientName)}`);
-              return res.data;
+                this.encounters = res.data.data
             } catch (error) {
               console.error("Failed to fetch encounters:", error);
               throw error;
