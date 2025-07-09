@@ -46,7 +46,9 @@ export const useCareGroupStore = defineStore("careGroup", {
         totalFPE: (state) => state.careGroupSummary?.fpe?.[0]?.count || 0,
         totalFPC: (state) => state.careGroupSummary?.fpc?.[0]?.count || 0,
         totalLabs: (state) => state.careGroupSummary?.labs?.[0]?.total || 0,
-        totalMeds: (state) => state.careGroupSummary?.meds?.[0]?.total || 0,
+      totalMeds: (state) => state.careGroupSummary?.meds?.[0]?.total || 0,
+      totalFpePending: (state) => state.careGroupSummary?.fpePending?.[0]?.count || 0,
+      totalFpcPending: (state) => state.careGroupSummary?.fpcPending?.[0]?.count || 0,
     },
     actions: {
         async fetchCareGroups() {
@@ -103,6 +105,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         
             const res = await api.get("/encounters/summary", { params });
             this.careGroupSummary = res.data;
+            console.log("client summar", this.careGroupSummary);
           } catch (error) {
             console.error("Failed to fetch client summary", error);
           } finally {

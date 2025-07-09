@@ -1,6 +1,6 @@
 <template>
     <div class="p-6 space-y-6">
-      <h1 class="text-2xl font-bold mb-4">Care Group Details</h1>
+      <h1 class="text-2xl font-bold mb-4">{{ careGroup.client_name }}</h1>
 
        <!-- Date Filters -->
     <div class="flex flex-col sm:flex-row gap-4 items-end bg-white p-3">
@@ -23,7 +23,7 @@
  </div>
  <button
    @click="applyFilter"
-   class="bg-blue-600 text-white px-3 py-2 rounded"
+   class="bg-primary text-white px-3 py-2 rounded"
  >
    Load Data
  </button>
@@ -73,9 +73,9 @@
   <Card class="shadow border border-gray-200">
     <template #content>
       <div class="flex items-center space-x-4">
-        <i class="pi pi-shield text-yellow-500 text-2xl"></i>
+        <i class="pi pi-shield text-pink-500 text-2xl"></i>
         <div>
-          <h2 class="text-sm text-gray-500 font-semibold">Laboratories Provided</h2>
+          <h2 class="text-sm text-gray-500 font-semibold">Laboratory Orders</h2>
           <p class="text-2xl font-bold">{{ totalLabs }}</p>
         </div>
       </div>
@@ -90,6 +90,32 @@
         <div>
           <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
           <p class="text-2xl font-bold">{{ totalMeds }}</p>
+        </div>
+      </div>
+    </template>
+  </Card>
+
+  <!-- FPE Pending Status -->
+  <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-spinner text-yellow-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">FPE Pending Status</h2>
+          <p class="text-2xl font-bold">{{ totalFpePending }}</p>
+        </div>
+      </div>
+    </template>
+  </Card>
+
+   <!-- FPC Pending Status -->
+   <Card class="shadow border border-gray-200">
+    <template #content>
+      <div class="flex items-center space-x-4">
+        <i class="pi pi-clock text-yellow-500 text-2xl"></i>
+        <div>
+          <h2 class="text-sm text-gray-500 font-semibold">FPC Pending Status</h2>
+          <p class="text-2xl font-bold">{{ totalFpcPending }}</p>
         </div>
       </div>
     </template>
@@ -176,7 +202,7 @@ import { useOnboardedStore } from "../stores/onBoardedStore";
   const careGroupStore = useCareGroupStore();
   const onBoardedStore = useOnboardedStore();
 const {fetchCareGroupById, fetchEncountersByClientName, fetchSummaryByClientName, fetchPatientsByClientName } = careGroupStore;
-const {careGroup, encounters, loading, loadingEncounters, error, careGroupSummary, totalFPC, totalFPE, totalLabs, totalMeds, careGroupTotalPatients } = storeToRefs(careGroupStore);
+const {careGroup, encounters, loading, loadingEncounters, error, careGroupSummary, totalFPC, totalFPE, totalLabs, totalMeds, totalFpePending, totalFpcPending, careGroupTotalPatients } = storeToRefs(careGroupStore);
 
 const startDate = ref('');
 const endDate = ref('');
