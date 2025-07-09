@@ -2,6 +2,33 @@
     <div class="p-6 space-y-6">
       <h1 class="text-2xl font-bold mb-4">Care Group Details</h1>
 
+       <!-- Date Filters -->
+    <div class="flex flex-col sm:flex-row gap-4 items-end bg-white p-3">
+ 
+ <div>
+   <label class="block text-sm text-gray-500 mb-1">Start Date</label>
+   <input
+     type="date"
+     v-model="startDate"
+     class="border border-gray-300 rounded px-2 py-1"
+   />
+ </div>
+ <div>
+   <label class="block text-sm text-gray-500 mb-1">End Date</label>
+   <input
+     type="date"
+     v-model="endDate"
+     class="border border-gray-300 rounded px-2 py-1"
+   />
+ </div>
+ <button
+   @click="applyFilter"
+   class="bg-blue-600 text-white px-3 py-2 rounded"
+ >
+   Load Data
+ </button>
+</div>
+
       <!-- Konsulta Registered -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card class="shadow border border-gray-200">
@@ -151,6 +178,36 @@ import { useOnboardedStore } from "../stores/onBoardedStore";
 const {fetchCareGroupById, fetchEncountersByClientName, fetchSummaryByClientName, fetchPatientsByClientName } = careGroupStore;
 const {careGroup, encounters, loading, loadingEncounters, error, careGroupSummary, totalFPC, totalFPE, totalLabs, totalMeds, careGroupTotalPatients } = storeToRefs(careGroupStore);
 
+const startDate = ref('');
+const endDate = ref('');
+const currentYear = new Date().getFullYear();
+const selectedYear = ref(currentYear.toString());
+
+const monthLabels = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+  ];
+
+
+  const applyFilter = () => {
+  if (startDate.value && endDate.value) {
+    fetchSummaryByClientName(careGroup.value.client_name, startDate.value, endDate.value);
+    fetchPatientsByClientName(careGroup.value.client_name, startDate.value, endDate.value);
+  } else {
+    fetchEncountersByClientName(careGroup.value.client_name);
+    fetchPatientsByClientName(careGroup.value.client_name);
+  }
+};
   
 onMounted(async () => {
   try {

@@ -92,29 +92,43 @@ export const useCareGroupStore = defineStore("careGroup", {
             }
         },
         
-        async fetchSummaryByClientName(clientName) {
-            this.loading = true;
-            try {
-               const res = await api.get(`/encounters/summary?facility=${encodeURIComponent(clientName)}`);
-                this.careGroupSummary = res.data      
-            } catch (error) {
-                console.error('Failed to fetch client summary', error)
-            } finally {
-                this.loading = false;
+        async fetchSummaryByClientName(clientName, startDate = null, endDate = null) {
+          this.loading = true;
+          try {
+            const params = { facility: clientName };
+            if (startDate && endDate) {
+              params.start = startDate;
+              params.end = endDate;
             }
-      },
         
-      async fetchPatientsByClientName(clientName) {
-        this.loading = true
-        try {
-          const res = await api.get(`/upload/onboarded/patients?facility=${encodeURIComponent(clientName)}`);
-          this.careGroupTotalPatients = res.data.total
-        } catch (error) {
-          consonle.error("Failed to fetch patient by client name", error)
-        } finally {
-          this.loading = false;
-        }
+            const res = await api.get("/encounters/summary", { params });
+            this.careGroupSummary = res.data;
+          } catch (error) {
+            console.error("Failed to fetch client summary", error);
+          } finally {
+            this.loading = false;
+          }
         },
+        
+        
+        async fetchPatientsByClientName(clientName, startDate = null, endDate = null) {
+          this.loading = true;
+          try {
+            const params = { facility: clientName };
+            if (startDate && endDate) {
+              params.startDate = startDate;
+              params.endDate = endDate;
+            }
+        
+            const res = await api.get("/upload/onboarded/patients", { params });
+            this.careGroupTotalPatients = res.data.total;
+          } catch (error) {
+            console.error("Failed to fetch patients by client name", error);
+          } finally {
+            this.loading = false;
+          }
+        },
+        
           
           
         filterCareGroups(searchTerm, mainRegion) {
