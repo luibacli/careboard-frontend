@@ -50,16 +50,19 @@
        <InputText id="province" class="flex-auto" autocomplete="off" v-model="careGroupForm.province" />
     </div>
     <div class="flex items-center mb-4 justify-between">
-        <div class="flex items-center gap-4"> 
+        <div class="flex items-center gap-4 "> 
             <label for="main" class="font-semibold w-24">Main Region</label>
             <Select id="region" v-model="careGroupForm.main" :options="regions" optionLabel="label"
-                    optionValue="value" placeholder="Select Region" class="w-50" />
-        </div>
-         <div>
-            <Button label="Save" icon="pi pi-check" class="p-button-success ml-2" type="submit"/>
+                    optionValue="value" placeholder="Select Region" class="w-35" />
+                    <label for="type" class="font-semibold w-24">Clinic Type</label>
+            <Select id="type" v-model="careGroupForm.type" :options="clinicTypes" optionLabel="label"
+                    optionValue="value" placeholder="Select Type" class="w-35" />
         </div>
       
     </div>
+    <div class="flex items-center justify-end">
+            <Button label="Save" icon="pi pi-check" class="p-button-success ml-2" type="submit"/>
+        </div>
     </Form>
     
  </Dialog>
@@ -88,6 +91,7 @@
   <Column field="city" header="City" sortable />
   <Column field="province" header="Province" sortable />
   <Column field="main" header="Main Region" sortable />
+  <Column field="type" header="Type" sortable />
 
   <Column header="Status">
     <template #body="slotProps">
@@ -151,7 +155,7 @@ import Toast from 'primevue/toast';
 const toast = useToast();
 const careGroupStore = useCareGroupStore();
 const { fetchCareGroups, createCareGroup, fetchCareGroupByMain, deleteCareGroup } = careGroupStore;
-const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible, loading } = storeToRefs(careGroupStore);
+const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible, loading, clinicTypes, selectedClinicType} = storeToRefs(careGroupStore);
 
 
 

@@ -15,6 +15,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             city: "",
             province: "",
             main: "Luzon",
+            type: "Public",
             status: "active"
           },
           
@@ -25,6 +26,15 @@ export const useCareGroupStore = defineStore("careGroup", {
             { label: "Luzon", value: "Luzon" },
             { label: "Visayas", value: "Visayas" },
             { label: "Mindanao", value: "Mindanao" },
+    ],
+        selectedClinicType: null,
+    clinicTypes: [
+      {
+            label: "Public", value: "public"
+      },
+      {
+        label: "Private", value: "private"
+      }
         ],
         careGroup: null,
         encounters: [],
@@ -143,7 +153,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         },
         async createCareGroup() {
             try {
-                if (!this.careGroupForm.client_name || !this.careGroupForm.address || !this.careGroupForm.city || !this.careGroupForm.province || !this.careGroupForm.main) {
+                if (!this.careGroupForm.client_name || !this.careGroupForm.address || !this.careGroupForm.city || !this.careGroupForm.province || !this.careGroupForm.main || !this.careGroupForm.type) {
                     throw new Error("All fields are required."); 
                 }
                 const res = await api.post("/caregroups", this.careGroupForm);
