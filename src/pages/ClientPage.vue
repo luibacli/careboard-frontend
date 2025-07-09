@@ -10,7 +10,7 @@
         <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
         <div>
           <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-          <p class="text-2xl font-bold">{{ totalFPE }}</p>
+          <p class="text-2xl font-bold">{{ careGroupTotalPatients }}</p>
         </div>
       </div>
     </template>
@@ -141,12 +141,15 @@
   import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useCareGroupStore } from "../stores/careGroupStore";
+  import { useCareGroupStore } from "../stores/careGroupStore";
+import { useOnboardedStore } from "../stores/onBoardedStore";
+  
   
   const route = useRoute();
-const careGroupStore = useCareGroupStore();
-const {fetchCareGroupById, fetchEncountersByClientName, fetchSummaryByClientName } = careGroupStore;
-const {careGroup, encounters, loading, loadingEncounters, error, careGroupSummary, totalFPC, totalFPE, totalLabs, totalMeds } = storeToRefs(careGroupStore);
+  const careGroupStore = useCareGroupStore();
+  const onBoardedStore = useOnboardedStore();
+const {fetchCareGroupById, fetchEncountersByClientName, fetchSummaryByClientName, fetchPatientsByClientName } = careGroupStore;
+const {careGroup, encounters, loading, loadingEncounters, error, careGroupSummary, totalFPC, totalFPE, totalLabs, totalMeds, careGroupTotalPatients } = storeToRefs(careGroupStore);
 
   
 onMounted(async () => {
@@ -154,15 +157,20 @@ onMounted(async () => {
     // Fetch care group
       await fetchCareGroupById(route.params.id);
     console.log("Caregroup Data", careGroup.value);
+     
 
 
     // Fetch encounters
     if (careGroup.value?.client_name) {
       await fetchEncountersByClientName(careGroup.value.client_name);
       await fetchSummaryByClientName(careGroup.value.client_name)
+      // Fetch Patients
+      await fetchPatientsByClientName(careGroup.value.client_name);
+
       console.log(careGroup.value);
       console.log("Client Summary:", careGroupSummary.value);
       console.log("Total FPE", totalFPE.value);
+      console.log("Total Patients By Client", careGroupTotalPatients.value);
     }
   } catch (err) {
     console.error(err);

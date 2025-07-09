@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import api from '../lib/axios';
+import { data } from 'autoprefixer';
 
 export const useOnboardedStore = defineStore('onboarded', {
   state: () => ({
@@ -38,6 +39,8 @@ export const useOnboardedStore = defineStore('onboarded', {
         this.patients = response.data.data;
         this.totalPatients = response.data.total;
         console.log("Total Patients", this.totalPatients);
+        return response.data.total;
+      
       } catch (err) {
         console.error('Error fetching patients:', err);
         this.error = 'Failed to fetch patients';
@@ -101,7 +104,7 @@ export const useOnboardedStore = defineStore('onboarded', {
       this.progress = 0;
 
       try {
-        const response = await api.post("/upload", formData, {
+        const response = await api.post("/upload/upload-onboarded", formData, {
           headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: (progressEvent) => {
             if (progressEvent.lengthComputable) {

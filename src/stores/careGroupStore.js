@@ -17,7 +17,8 @@ export const useCareGroupStore = defineStore("careGroup", {
             main: "Luzon",
             type: "Public",
             status: "active"
-          },
+    },
+        careGroupTotalPatients: 0,
           
         dialogVisible: false,
         selectedRegion: null,
@@ -101,6 +102,18 @@ export const useCareGroupStore = defineStore("careGroup", {
             } finally {
                 this.loading = false;
             }
+      },
+        
+      async fetchPatientsByClientName(clientName) {
+        this.loading = true
+        try {
+          const res = await api.get(`/upload/onboarded/patients?facility=${encodeURIComponent(clientName)}`);
+          this.careGroupTotalPatients = res.data.total
+        } catch (error) {
+          consonle.error("Failed to fetch patient by client name", error)
+        } finally {
+          this.loading = false;
+        }
         },
           
           
