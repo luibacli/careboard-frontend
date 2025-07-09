@@ -6,7 +6,7 @@
     </div>
   
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 masterlist-header gap-2">
-      <p class="text-2xl font-bold">Master List</p>
+      <p class="text-2xl font-bold">Encounter List</p>
   
       <div class="flex flex-wrap gap-2">
         <InputText
