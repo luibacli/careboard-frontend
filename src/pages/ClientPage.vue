@@ -1,6 +1,6 @@
 <template>
     <div class="p-6 space-y-6">
-      <h1 class="text-2xl font-bold mb-4">{{ careGroup.client_name }}</h1>
+      <h1 class="text-2xl font-bold mb-4">Summary Details</h1>
 
        <!-- Date Filters -->
     <div class="flex flex-col sm:flex-row gap-4 items-end bg-white p-3">
