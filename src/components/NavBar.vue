@@ -16,22 +16,7 @@
   
         <template #end>
           <div class="flex items-center gap-2" style="position: relative;">
-            <!-- Upload Button -->
-            <Button
-              label="Upload Encounters"
-              icon="pi pi-upload"
-              @click="triggerFileInput"
-              class="p-button-success"
-              :disabled="uploading"
-            />
-            <!-- Hidden File Input -->
-            <input
-              ref="fileInput"
-              type="file"
-              accept=".csv"
-              style="display: none"
-              @change="handleFileUpload"
-            />
+   
   
             <!-- Avatar Menu -->
             <Menu ref="profileMenuRef" :model="profileMenuItems" popup />
@@ -67,7 +52,7 @@
   import Menu from "primevue/menu";
   import Toast from "primevue/toast";
   import ProgressBar from "primevue/progressbar";
-  import api from "../lib/axios";
+
   
   const authStore = useAuthStore();
   const { logout } = authStore;
@@ -92,9 +77,6 @@
   ]);
   
   const profileMenuRef = ref();
-  const fileInput = ref();
-  const uploading = ref(false);
-  const progress = ref(0);
 
   // Define profile menu items
   const profileMenuItems = [
@@ -112,55 +94,7 @@
     profileMenuRef.value.toggle(event);
   }
   
-  function triggerFileInput() {
-    fileInput.value.click();
-  }
-  
-  async function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-  
-    const formData = new FormData();
-    formData.append("file", file);
-  
-    uploading.value = true;
-    progress.value = 0;
-  
-    try {
-      const response = await api.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.lengthComputable) {
-            progress.value = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-          }
-        },
-      });
-  
-      const { inserted, updated, skipped, message } = response.data;
-  
-      toast.add({
-        severity: "success",
-        summary: "Upload Complete",
-        detail: `${message} • Inserted: ${inserted}, Updated: ${updated}, Skipped: ${skipped}`,
-        life: 5000
-      });
-    } catch (error) {
-      console.error("Upload error:", error);
-  
-      toast.add({
-        severity: "error",
-        summary: "Upload Failed",
-        detail: error.response?.data?.error || "Unknown error",
-        life: 5000
-      });
-    } finally {
-      uploading.value = false;
-      progress.value = 0;
-      event.target.value = null;
-    }
-  }
+
   </script>
   
   <style scoped>
