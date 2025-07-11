@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "../lib/axios";
+import { data } from "autoprefixer";
 
 
 
@@ -18,7 +19,14 @@ export const useCareGroupStore = defineStore("careGroup", {
             type: "Public",
             status: "active"
     },
-        careGroupTotalPatients: 0,
+    careGroupTotalPatients: 0,
+    totalRegisteredByRegion: 0,
+    totalFpeByRegion: 0,
+    totalFpcByRegion: 0,
+    allCareGroupsByRegion: [],
+    publicCareGroupsByRegion: [],
+    privateCareGroupsByRegion: [],
+
           
         dialogVisible: false,
         selectedRegion: null,
@@ -111,6 +119,31 @@ export const useCareGroupStore = defineStore("careGroup", {
           } finally {
             this.loading = false;
           }
+      },
+        
+      async fetchCareGroupSummaryByRegion(regionName, startDate = null, endDate = null) {
+        this.loading = true
+        try {
+          const params = { region: regionName }
+          if (startDate && endDate) {
+            params.start = startDate;
+            params.end = endDate;
+          }
+          const res = await api.get("/encounters/region-caregroups-summary", { params });
+          this.allCareGroupsByRegion = res.data
+          this.publicCareGroupsByRegion = res.data.filter(cg => cg.type === "public")
+          this.privateCareGroupsByRegion = res.data.filter(cg => cg.type === "private")
+
+          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + cg.totals.registered, 0);
+          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpe, 0);
+          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpc, 0);
+          
+
+        } catch (error) {
+          console.error("Failed to fetch each care group summary by region", error)
+        } finally {
+          this.loading = false;
+        }
         },
         
         
