@@ -128,19 +128,32 @@
           </div>
         </TabPanel>
         <TabPanel value="1">
-          <h2 class="text-xl font-bold mt-8 mb-2">Encounters</h2>
+       
           <DataTable
             :value="encounters"
             :loading="loadingEncounters"
             class="w-full text-sm"
             stripedRows
             scrollable
-            scrollHeight="400px"
             responsiveLayout="scroll"
             showGridlines
             paginator
-            :rows="10"
+            :rows="25"
           >
+          <template #header>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xl font-bold">Encounters</span>
+            <Button label="Upload Encounters" icon="pi pi-plus" @click="triggerFileInput" />
+            <input
+          ref="fileInput"
+          type="file"
+          accept=".csv"
+          style="display: none"
+          @change="handleFileUpload"
+        />
+           
+        </div>
+    </template>
             <Column field="appointment_date" header="Appointment Date" sortable style="min-width: 160px;" />
             <Column field="start_date" header="Date Submitted" sortable style="min-width: 160px;" />
             <Column field="philhealth_transaction_no" header="Transaction No." sortable style="min-width: 140px;" />
@@ -196,12 +209,16 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
+import { useToast } from "primevue/usetoast";
 import { useCareGroupStore } from "../stores/careGroupStore";
-import { useOnboardedStore } from "../stores/onBoardedStore";
+import { useEncounterStore } from "../stores/encounterStore";
 
 const route = useRoute();
 const careGroupStore = useCareGroupStore();
-const onBoardedStore = useOnboardedStore();
+const encounterStore = useEncounterStore();
+
+const toast = useToast();
+
 const {
   fetchCareGroupById,
   fetchEncountersByClientName,
@@ -253,6 +270,38 @@ const applyFilter = () => {
     fetchPatientsByClientName(careGroup.value.client_name);
   }
 };
+
+
+const fileInput = ref(null);
+
+function triggerFileInput() {
+  fileInput.value.click();
+}
+
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const result = await encounterStore.uploadFile(file)
+
+  if (result.success) {
+    toast.add({
+      severity: "success",
+      summary: "Upload Complete",
+      detail: `${result.message} • Inserted: ${result.inserted}, Updated: ${result.updated}, Skipped: ${result.skipped}`,
+      life: 5000,
+    });
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Upload Failed",
+      detail: result.error,
+      life: 5000,
+    });
+  }
+
+  event.target.value = null; // reset input
+  }
 
 onMounted(async () => {
   try {
