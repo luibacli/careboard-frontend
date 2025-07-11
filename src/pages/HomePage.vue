@@ -53,16 +53,16 @@ const fpcCounts = computed(() => {
 });
 
 const fpeCountTotal = computed(() =>
-  summaryStore.summaryData?.fpe?.[0]?.count || 0
+  summaryStore.summaryData?.fpe?.[0]?.count.toLocaleString() || 0
 );
 const fpcCountTotal = computed(() =>
-  summaryStore.summaryData?.fpc?.[0]?.count || 0
+  summaryStore.summaryData?.fpc?.[0]?.count.toLocaleString() || 0
 );
 const labsCountTotal = computed(() =>
-  summaryStore.summaryData?.labs?.[0]?.total || 0
+  summaryStore.summaryData?.labs?.[0]?.total.toLocaleString() || 0
 );
 const medsCountTotal = computed(() =>
-  summaryStore.summaryData?.meds?.[0]?.total || 0
+  summaryStore.summaryData?.meds?.[0]?.total.toLocaleString() || 0
 );
 
 
@@ -132,7 +132,8 @@ const applyFilter = () => {
         <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
         <div>
           <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-          <p class="text-2xl font-bold">{{ onBoardedStore.totalPatients }}</p>
+          <p class="text-2xl font-bold">{{ onBoardedStore.totalPatients.toLocaleString
+          ()}}</p>
         </div>
       </div>
     </template>

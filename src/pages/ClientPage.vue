@@ -48,7 +48,7 @@
                   <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-                    <p class="text-2xl font-bold">{{ careGroupTotalPatients }}</p>
+                    <p class="text-2xl font-bold">{{ careGroupTotalPatients.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -60,7 +60,7 @@
                   <i class="pi pi-user-edit text-green-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
-                    <p class="text-2xl font-bold">{{ totalFPE }}</p>
+                    <p class="text-2xl font-bold">{{ totalFPE.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -72,7 +72,7 @@
                   <i class="pi pi-comments text-purple-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
-                    <p class="text-2xl font-bold">{{ totalFPC }}</p>
+                    <p class="text-2xl font-bold">{{ totalFPC.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -84,7 +84,7 @@
                   <i class="pi pi-shield text-pink-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">Laboratory Orders</h2>
-                    <p class="text-2xl font-bold">{{ totalLabs }}</p>
+                    <p class="text-2xl font-bold">{{ totalLabs.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -96,7 +96,7 @@
                   <i class="pi pi-heart-fill text-red-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
-                    <p class="text-2xl font-bold">{{ totalMeds }}</p>
+                    <p class="text-2xl font-bold">{{ totalMeds.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -108,7 +108,7 @@
                   <i class="pi pi-spinner text-yellow-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">FPE Pending Status</h2>
-                    <p class="text-2xl font-bold">{{ totalFpePending }}</p>
+                    <p class="text-2xl font-bold">{{ totalFpePending.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -120,7 +120,7 @@
                   <i class="pi pi-clock text-yellow-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">FPC Pending Status</h2>
-                    <p class="text-2xl font-bold">{{ totalFpcPending }}</p>
+                    <p class="text-2xl font-bold">{{ totalFpcPending.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
