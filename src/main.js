@@ -9,9 +9,13 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column'
 import Tag from 'primevue/tag';
 import Chart from 'primevue/chart';
-import { Card, Button, Select, InputText, DatePicker } from 'primevue'
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+import TabPanels from 'primevue/tabpanels';
+import TabPanel from 'primevue/tabpanel';
 
-
+import { Card, Button, Select, InputText, DatePicker,} from 'primevue'
 import { createPinia } from 'pinia'
 
 
@@ -39,5 +43,12 @@ app.component('Button', Button);
 app.component('Select', Select);
 app.component('InputText', InputText);
 app.component('DatePicker', DatePicker);
+app.component('Tabs', Tabs),
+app.component('Tab', Tab),
+app.component('TabList', TabList),
+app.component('TabPanels', TabPanels),
+app.component('TabPanel', TabPanel)
+    
+
 
 app.mount('#app')
