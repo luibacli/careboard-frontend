@@ -6,7 +6,7 @@ import AboutPage from "../pages/AboutPage.vue";
 import MainLayout from "../layouts/MainLayout.vue";
 import LuzonPage from "../pages/LuzonPage.vue";
 import MindanaoPage from "../pages/MindanaoPage.vue";
-import VisayasPage from "../pages/VisayasPage.vue";
+import ReportsPage from "../pages/ReportsPage.vue";
 import CareGroups from "../pages/CareGroups.vue";
 import OnboardedPage from "../pages/OnboardedPage.vue";
 import EncountersPage from "../pages/EncountersPage.vue";
@@ -22,20 +22,10 @@ const routes = [
                 name: "Home",
                 component: HomePage
             },
-               {
-                path: "luzon",
-                name: "Luzon",
-                component: LuzonPage
-            },
             {
-                path: "mindanao",
-                name: "Mindanao",
-                component: MindanaoPage
-            },
-            {
-                path: "visayas",
-                name: "Visayas",
-                component: VisayasPage
+                path: "reports/:name",
+                name: "Reports",
+                component: ReportsPage
             },
             {
                 path: "caregroups",

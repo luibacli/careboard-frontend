@@ -74,31 +74,16 @@
   
   const router = useRouter();
   const toast = useToast();
+  const regions = ["Luzon", "Visayas", "Mindanao"];
   
   const items = ref([
-    { label: 'Home', icon: 'pi pi-home',  command: () => router.push("/") },
+    { label: 'Home', icon: 'pi pi-home', command: () => router.push("/") },
     {
-      label: 'Dashboards',
-      icon: 'pi pi-chart-bar',
-      items: [
-        {
-          label: "Luzon",
-          command: () => router.push('/luzon')
-        },
-        {
-          label: "Visayas",
-          command: () => router.push('/visayas')
-        },
-        {
-          label: "Mindanao",
-          command: () => router.push('/mindanao')
-        },
-        {
-          label: "Create Report",
-        }
-        
-      ]
-     },
+      label: 'Reports', icon: 'pi pi-chart-bar', items: regions.map(region => ({
+        label: region,
+        command: () => router.push(`/reports/${region}`)
+      
+    }))},
     { label: 'Caregroups', icon: 'pi pi-building', command: () => router.push('/caregroups') },
     { label: 'Encounters', icon: 'pi pi-warehouse',command: () => router.push('/encounters') },
     { label: 'Master List', icon: 'pi pi-users', command: () => router.push('/onboarded') },

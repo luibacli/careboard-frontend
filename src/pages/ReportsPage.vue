@@ -102,7 +102,7 @@ const totalPrivate = computed(() => {
 const { fetchCareGroupSummaryByRegion } = careGroupStore;
 const {allCareGroupsByRegion, loading, publicCareGroupsByRegion, privateCareGroupsByRegion, totalFpcByRegion, totalFpeByRegion, totalRegisteredByRegion} = storeToRefs(careGroupStore)
 
-const regionName = route.name
+const regionName = route.params.name;
 
 const reportContent = ref(null);
 
