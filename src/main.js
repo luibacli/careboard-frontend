@@ -9,7 +9,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column'
 import Tag from 'primevue/tag';
 import Chart from 'primevue/chart';
-import { Card, Button, Select, InputText } from 'primevue'
+import { Card, Button, Select, InputText, DatePicker } from 'primevue'
 
 
 import { createPinia } from 'pinia'
@@ -38,5 +38,6 @@ app.component('Card', Card);
 app.component('Button', Button);
 app.component('Select', Select);
 app.component('InputText', InputText);
+app.component('DatePicker', DatePicker);
 
 app.mount('#app')

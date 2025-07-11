@@ -4,8 +4,6 @@ import HomePage from "../pages/HomePage.vue";
 import AuthPage from "../pages/AuthPage.vue";
 import AboutPage from "../pages/AboutPage.vue";
 import MainLayout from "../layouts/MainLayout.vue";
-import LuzonPage from "../pages/LuzonPage.vue";
-import MindanaoPage from "../pages/MindanaoPage.vue";
 import ReportsPage from "../pages/ReportsPage.vue";
 import CareGroups from "../pages/CareGroups.vue";
 import OnboardedPage from "../pages/OnboardedPage.vue";

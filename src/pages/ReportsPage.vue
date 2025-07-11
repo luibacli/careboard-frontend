@@ -1,13 +1,33 @@
 <template>
    <div class="p-6 space-y-6">
+ 
+    
+ 
       <div class="flex justify-between">
-      <h1 class="text-2xl font-bold mb-4">{{ regionName }} Clients Summary</h1>
+
+       <!-- Date Filters -->
+    <div class="flex flex-col sm:flex-row gap-4 items-end  p-3">
+ 
+ <div>
+   <label for="startDate" class="font-bold block mb-2">Start Date</label>
+   <DatePicker v-model="starDate" showIcon fluid :showOnFocus="false" inputId="startDate" dateFormat="dd/mm/yy"/>
+ </div>
+ <div>
+  <label for="endDate" class="font-bold block mb-2">End Date</label>
+   <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate" dateFormat="dd/mm/yy"/>
+ </div>
+<Button label="Load Data" severity="info" @click="applyFilter"/>
+
       <Button
         label="Download PDF"
         icon="pi pi-download"
-        class="p-button-primary"
+        severity="danger"
         @click="downloadPDF"
       />
+  
+
+</div>
+   
     </div>
 
      
@@ -120,6 +140,17 @@ function downloadPDF() {
    html2pdf().from(element).set(opt).save();
 }
 
+const starDate = ref("");
+const endDate = ref("");
+
+
+function applyFilter() {
+  if (starDate.value && endDate.value) {
+    fetchCareGroupSummaryByRegion(regionName, starDate.value, endDate.value)
+  } else {
+    fetchCareGroupSummaryByRegion(regionName)
+  }
+}
 onMounted( async () => {
    await fetchCareGroupSummaryByRegion(regionName)
 })
