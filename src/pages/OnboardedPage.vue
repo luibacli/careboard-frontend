@@ -41,7 +41,7 @@
       class="w-full mt-4"
       stripedRows
       paginator
-      :rows="10"
+      :rows="50"
     >
       <Column field="client_name" header="Client Name" sortable />
       <Column field="group_name" header="Group Name" sortable />
