@@ -134,10 +134,10 @@ export const useCareGroupStore = defineStore("careGroup", {
           this.publicCareGroupsByRegion = res.data.filter(cg => cg.type === "public")
           this.privateCareGroupsByRegion = res.data.filter(cg => cg.type === "private")
 
-          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + cg.totals.registered, 0);
-          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpe, 0);
-          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpc, 0);
-          
+          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + cg.totals.registered, 0).toLocaleString();
+          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpe, 0).toLocaleString();
+          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpc, 0).toLocaleString();
+
 
         } catch (error) {
           console.error("Failed to fetch each care group summary by region", error)
