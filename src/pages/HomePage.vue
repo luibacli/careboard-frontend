@@ -87,31 +87,32 @@ const applyFilter = () => {
   <div class="p-6 space-y-6">
     <p class="text-3xl font-bold">Dashboard Summary</p>
 
-    <!-- Date Filters -->
-    <div class="flex flex-col sm:flex-row gap-4 items-end bg-white p-3">
- 
-      <div>
-        <label class="block text-sm text-gray-500 mb-1">Start Date</label>
-        <input
-          type="date"
-          v-model="startDate"
-          class="border border-gray-300 rounded px-2 py-1"
-        />
-      </div>
-      <div>
-        <label class="block text-sm text-gray-500 mb-1">End Date</label>
-        <input
-          type="date"
-          v-model="endDate"
-          class="border border-gray-300 rounded px-2 py-1"
-        />
-      </div>
-      <button
-        @click="applyFilter"
-        class="bg-blue-600 text-white px-3 py-2 rounded"
-      >
-        Load Data
-      </button>
+    <div class="flex flex-col sm:flex-row gap-4 items-end p-3">
+        <div>
+          <label for="startDate" class="font-bold text-xs mb-2">Start Date</label>
+          <DatePicker
+            v-model="startDate"
+            showIcon
+            fluid
+            :showOnFocus="false"
+            inputId="startDate"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+          />
+        </div>
+        <div>
+          <label for="endDate" class="font-bold text-xs mb-2">End Date</label>
+          <DatePicker
+            v-model="endDate"
+            showIcon
+            fluid
+            :showOnFocus="false"
+            inputId="endDate"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+          />
+        </div>
+        <Button label="Load Data" severity="info" @click="applyFilter" />
     </div>
 
     <!-- Loading -->
