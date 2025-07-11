@@ -10,11 +10,11 @@
  
  <div>
    <label for="startDate" class="font-bold block mb-2">Start Date</label>
-   <DatePicker v-model="starDate" showIcon fluid :showOnFocus="false" inputId="startDate" dateFormat="dd/mm/yy"/>
+   <DatePicker v-model="starDate" showIcon fluid :showOnFocus="false" inputId="startDate" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy"/>
  </div>
  <div>
   <label for="endDate" class="font-bold block mb-2">End Date</label>
-   <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate" dateFormat="dd/mm/yy"/>
+   <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy"/>
  </div>
 <Button label="Load Data" severity="info" @click="applyFilter"/>
 
@@ -38,6 +38,10 @@
       <div></div>
        <!-- TOTAL SUMMARY -->
        <div class="bg-white rounded shadow p-4 mb-6">
+        <div v-show="newFormattedEndDate && newFormattedStartDate" class="mb-6">
+          <p class="text-xl">{{ newFormattedStartDate }} -  {{ newFormattedEndDate }}</p>
+        </div>
+      
          <h2 class="text-lg font-semibold mb-2"> {{ regionName }} Overall Totals (All Facilities)</h2>
          <div class="flex gap-4">
            <span>👥 Registered: <strong>{{ totalRegisteredByRegion }}</strong></span>
@@ -97,6 +101,7 @@ import { useCareGroupStore } from '../stores/careGroupStore';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import html2pdf from "html2pdf.js";
+import { date } from 'zod/v4';
 
 
 const careGroupStore = useCareGroupStore();
@@ -105,17 +110,17 @@ const route = useRoute();
 
 const totalPublic = computed(() => {
    return {
-      registered: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0),
-      fpe: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0),
-      fpc: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0)
+      registered: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0).toLocaleString(),
+      fpe: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0).toLocaleString(),
+      fpc: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0).toLocaleString(),
    }
 })
 
 const totalPrivate = computed(() => {
    return {
-      registered: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0),
-      fpe: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0),
-      fpc: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0)
+      registered: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0).toLocaleString(),
+      fpe: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0).toLocaleString(),
+      fpc: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0).toLocaleString()
    }
 })
 
@@ -143,10 +148,30 @@ function downloadPDF() {
 const starDate = ref("");
 const endDate = ref("");
 
+const newFormattedStartDate = ref("");
+const newFormattedEndDate = ref("");
+
+
+function formatDate(dateInput) {
+  if (!dateInput) return ''
+  return dateInput.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 
 function applyFilter() {
   if (starDate.value && endDate.value) {
     fetchCareGroupSummaryByRegion(regionName, starDate.value, endDate.value)
+    newFormattedStartDate.value = formatDate(starDate.value);
+    newFormattedEndDate.value = formatDate(endDate.value);
+    console.log("From: ", newFormattedStartDate.value, " TO: ", newFormattedEndDate.value);
+
+
+    
+    
   } else {
     fetchCareGroupSummaryByRegion(regionName)
   }
