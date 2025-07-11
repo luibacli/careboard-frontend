@@ -16,15 +16,6 @@
       class="w-72 mr-2 border-gray-300 focus:border-blue-500"
       clearable
     />
-    
-            <Select
-      v-model="selectedUserType"    
-      :options="options"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Filter by User Type"
-      class="w-60 mr-2"
-    />
             <Button label="Upload Users" icon="pi pi-upload" class="p-button-success mr-2" @click="triggerFileInput" :disabled="uploading"/>
                <!-- Hidden File Input -->
             <input
@@ -75,7 +66,7 @@
     
       <template #empty>
         <div class="text-center text-gray-500 py-6">
-          No care users found. Click "Upload Users" to create your first one.
+          No users found. Click "Upload Users" to create your first one.
         </div>
       </template>
     
@@ -107,7 +98,7 @@ import ProgressBar from "primevue/progressbar";
 const toast = useToast();
 const onBoardedStore = useOnboardedStore()
 const { fetchPatients, uploadFile, filterUsers, fetchUsers } = onBoardedStore
-const {patients, users, allUsers, loading, progress, uploading, error, options, selectedUserType, searchQuery} = storeToRefs(onBoardedStore)
+const {patients, allPatients, loading, progress, uploading, error, options, selectedUserType, searchQuery} = storeToRefs(onBoardedStore)
 const fileInput = ref(null);
 
 function triggerFileInput() {
@@ -141,7 +132,7 @@ async function handleFileUpload(event) {
 
   const refresh = async () => {
     selectedUserType.value = null;
-    await fetchUsers();
+    await fetchPatients();
     toast.add({
       severity: "success",
       summary: "Refreshed",
@@ -151,17 +142,16 @@ async function handleFileUpload(event) {
   
     };
   
-  watch([searchQuery, selectedUserType], ([newSearch, newUserType]) => {
-    if(newSearch || newUserType) {
-      filterUsers(newSearch, newUserType);
+  watch(searchQuery, (newSearch) => {
+    if (newSearch) {
+      filterUsers(newSearch);
     } else {
       loading.value = true;
-      users.value = [];
+      patients.value = [];
       setTimeout(() => {
-        users.value = allUsers.value;
+        patients.value = allPatients.value;
         loading.value = false;
-      }, 300)
-      
+      }, 300);
     }
   });
   onMounted(async () => {

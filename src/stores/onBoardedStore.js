@@ -5,6 +5,7 @@ import { data } from 'autoprefixer';
 export const useOnboardedStore = defineStore('onboarded', {
   state: () => ({
     patients: [],
+    allPatients: [],
     users: [],
     allUsers: [],
     presenters: [],
@@ -30,16 +31,24 @@ export const useOnboardedStore = defineStore('onboarded', {
     async fetchPatients(page = 1, limit = 50, startDate = null, endDate = null) {
       this.loading = true;
       this.error = null;
+      this.patients = [];
     
       try {
         const response = await api.get('/upload/onboarded/patients', {
           params: { page, limit, startDate, endDate }
         });
+        
+        setTimeout(() => {
+          this.patients = response.data.data;
+          this.allPatients = response.data.data;
+          this.loading = false;
+        }, 300)
     
-        this.patients = response.data.data;
         this.totalPatients = response.data.total;
-        console.log("Total Patients", this.totalPatients);
+  
+
         return response.data.total;
+      
       
       } catch (err) {
         console.error('Error fetching patients:', err);
@@ -68,28 +77,20 @@ export const useOnboardedStore = defineStore('onboarded', {
       }
 
     },
-    filterUsers(searchTerm, userType) {
+    filterUsers(searchTerm) {
       this.loading = true;
-      this.users = [];
+      this.patients = [];
 
-      let results = this.allUsers;
-      if (userType) {
-        const allowed = ["Patient", "Presenter", "Clinician"];
-        if (!allowed.includes(userType)) {
-          throw new Error("Invalid User Type")
-        }
-        results = results.filter(cg => cg.user_type === userType )
-      }
-
+      let results = this.allPatients;
+   
       if (searchTerm) {
         const lowerSearch = searchTerm.toLowerCase();
-        results = results.filter(cg = cg.first_name.toLowerCase().includes(lowerSearch));
+        results = results.filter(cg => cg.first_name.toLowerCase().includes(lowerSearch));
       }
 
-      setTimeout(() => {
-        this.users = results;
+   
+        this.patients = results;
         this.loading = false;
-      }, 300)
     
   },
   async uploadFile(file) {
