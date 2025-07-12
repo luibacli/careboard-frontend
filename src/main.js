@@ -13,6 +13,7 @@ import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
+import Dialog from 'primevue/dialog';
 import TabPanel from 'primevue/tabpanel';
 
 import { Card, Button, Select, InputText, DatePicker,} from 'primevue'
@@ -47,7 +48,8 @@ app.component('Tabs', Tabs),
 app.component('Tab', Tab),
 app.component('TabList', TabList),
 app.component('TabPanels', TabPanels),
-app.component('TabPanel', TabPanel)
+    app.component('TabPanel', TabPanel)
+app.component('Dialog', Dialog),
     
 
 

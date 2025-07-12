@@ -2,7 +2,7 @@
     <Toast />
   
     <div v-if="uploading" class="mt-2">
-      <ProgressBar :value="progress" showValue>{{ progress }}%</ProgressBar>
+      <ProgressBar :value="progressPercentage" showValue>{{ progressPercentage }}%</ProgressBar>
     </div>
   
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 masterlist-header gap-2">
@@ -38,6 +38,12 @@
       </div>
     </div>
   
+    <Dialog v-model:visible="uploading" :style="{ width: '25rem'}" modal header="Uploading.." >
+      <div class="flex items-center gap-4 mb-4">
+        <p class="text-md ">{{ processed }} / {{ total }}</p>
+      </div>
+    
+    </Dialog>
     <!-- Responsive scrollable DataTable -->
     <DataTable
       :value="encounters"
@@ -81,24 +87,32 @@
   
      
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useEncounterStore } from "../stores/encounterStore";
 import { useToast } from "primevue/usetoast";
 import ProgressBar from "primevue/progressbar";
+import api from "../lib/axios";
 
 
 
 
 const toast = useToast();
 const encounterStore = useEncounterStore();
-const { fetchEncounters, uploadFile } = encounterStore
-const {encounters, totalEncounters, uploading, loading, allEncounters, error, progress, searchQuery} = storeToRefs(encounterStore)
+const { fetchEncounters, uploadFile, connectSocket, startUpload } = encounterStore
+const {encounters, totalEncounters, uploading, loading, allEncounters, error, progress, searchQuery, completed, processed, result, socket, socketId, total} = storeToRefs(encounterStore)
 const fileInput = ref(null);
+
+
+
+const progressPercentage = computed(() =>
+  total.value ? Math.round((processed.value / total.value) * 100) : 0
+);
 
 function triggerFileInput() {
   fileInput.value.click();
 }
+
 
 async function handleFileUpload(event) {
   const file = event.target.files[0];
@@ -123,20 +137,20 @@ async function handleFileUpload(event) {
   }
 
   event.target.value = null; // reset input
-  }
+}
 
-  const refresh = async () => {
-    // selectedUserType.value = null;
-      await fetchEncounters();
-    toast.add({
-      severity: "success",
-      summary: "Refreshed",
-      detail: "Master list reloaded",
-      life: 3000,
-    });
-  
-    };
-  
+
+const refresh = async () => {
+  // selectedUserType.value = null;
+  await fetchEncounters();
+  toast.add({
+    severity: "success",
+    summary: "Refreshed",
+    detail: "Master list reloaded",
+    life: 3000,
+  });
+};
+
 //   watch([searchQuery, selectedUserType], ([newSearch, newUserType]) => {
 //     if(newSearch || newUserType) {
 //       filterUsers(newSearch, newUserType);
@@ -150,7 +164,8 @@ async function handleFileUpload(event) {
       
 //     }
 //   });
-  onMounted(async () => {
-      await fetchEncounters();
-})
+onMounted(async () => {
+  await fetchEncounters();
+  connectSocket();
+});
 </script>
