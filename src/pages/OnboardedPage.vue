@@ -2,7 +2,7 @@
     <Toast />
 
     <div v-if="uploading" class="mt-2">
-        <ProgressBar :value="progress" showValue>{{ progress }}%</ProgressBar>
+        <ProgressBar :value="progressPercentage" showValue>{{ progressPercentage }}%</ProgressBar>
       </div>
     <div class="flex items-center justify-between mb-4 masterlist-header">
     
@@ -34,6 +34,14 @@
     />
         </div>
     </div>
+
+       <Dialog v-model:visible="uploading" :style="{ width: '25rem'}" modal header="Uploading.." >
+      <div class="flex items-center gap-4 mb-4">
+        <p class="text-md ">{{ processed }} / {{ total }}</p>
+      </div>
+    
+    </Dialog>
+
     <!-- Table for masterlist here -->
     <DataTable
       :value="patients"
@@ -86,7 +94,7 @@
      </template>
      
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useOnboardedStore } from "../stores/onBoardedStore";
 import { useToast } from "primevue/usetoast";
@@ -97,10 +105,13 @@ import ProgressBar from "primevue/progressbar";
 
 const toast = useToast();
 const onBoardedStore = useOnboardedStore()
-const { fetchPatients, uploadFile, filterUsers, fetchUsers } = onBoardedStore
-const {patients, allPatients, loading, progress, uploading, error, options, selectedUserType, searchQuery} = storeToRefs(onBoardedStore)
+const { fetchPatients, uploadFile, filterUsers, fetchUsers, connectSocket } = onBoardedStore
+const {patients, allPatients, loading, progress, uploading, error, options, selectedUserType, searchQuery, processed, total, completed, result} = storeToRefs(onBoardedStore)
 const fileInput = ref(null);
 
+const progressPercentage = computed(() =>
+  total.value ? Math.round((processed.value / total.value) * 100) : 0
+);
 function triggerFileInput() {
   fileInput.value.click();
 }
@@ -156,5 +167,6 @@ async function handleFileUpload(event) {
   });
   onMounted(async () => {
     await fetchPatients();
+    connectSocket();
 })
 </script>

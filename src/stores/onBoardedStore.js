@@ -1,9 +1,15 @@
 import { defineStore } from 'pinia';
 import api from '../lib/axios';
-import { data } from 'autoprefixer';
+import { io } from "socket.io-client";
 
 export const useOnboardedStore = defineStore('onboarded', {
   state: () => ({
+     socket: null,
+        socketId: null,
+        processed: 0,
+        total: 0,
+    completed: 0,
+    result: null,
     patients: [],
     allPatients: [],
     users: [],
@@ -28,6 +34,28 @@ export const useOnboardedStore = defineStore('onboarded', {
   }),
 
   actions: {
+           connectSocket() {
+      this.socket = io('http://localhost:3000');
+      this.socket.on('connect', () => {
+        this.socketId = this.socket.id;
+      });
+      this.socket.on('uploadProgress', (data) => {
+        this.processed = data.processed;
+        this.total = data.total;
+      });
+      this.socket.on('uploadComplete', (data) => {
+        this.uploading = false;
+        this.completed = true;
+        this.result = data;
+      });
+    },
+      startUpload() {
+      this.uploading = true;
+      this.completed = false;
+      this.processed = 0;
+      this.total = 0;
+      this.result = null;
+    },
     async fetchPatients(page = 1, limit = 50, startDate = null, endDate = null) {
       this.loading = true;
       this.error = null;
@@ -62,7 +90,7 @@ export const useOnboardedStore = defineStore('onboarded', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await api.get('upload/onboarded', {
+        const response = await api.get('upload/upload-onboarded', {
           params: { page, limit }
         });
         this.users = response.data.data;
@@ -93,49 +121,43 @@ export const useOnboardedStore = defineStore('onboarded', {
         this.loading = false;
     
   },
-  async uploadFile(file) {
-      if (!file) {
-        return { success: false, error: "No file selected." };
+async uploadFile(file) {
+  if (!file) {
+    return { success: false, error: "No file selected." };
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // Reset state
+  this.startUpload();
+
+  try {
+    const response = await api.post(
+      `/upload/upload-onboarded?socketId=${this.socketId}`, // 💡 this is critical
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
       }
+    );
 
-      const formData = new FormData();
-      formData.append("file", file);
+    const { inserted, updated, skipped, message } = response.data;
 
-      this.uploading = true;
-      this.progress = 0;
+    return {
+      success: true,
+      inserted,
+      updated,
+      skipped,
+      message,
+    };
+  } catch (error) {
+    console.error("Upload error:", error);
 
-      try {
-        const response = await api.post("/upload/upload-onboarded", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.lengthComputable) {
-              this.progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-            }
-          },
-        });
-
-        const { inserted, updated, skipped, message } = response.data;
-
-        return {
-          success: true,
-          inserted,
-          updated,
-          skipped,
-          message,
-        };
-      } catch (error) {
-        console.error("Upload error:", error);
-
-        return {
-          success: false,
-          error: error.response?.data?.error || "Unknown error",
-        };
-      } finally {
-        this.uploading = false;
-        this.progress = 0;
-      }
-    },
+    return {
+      success: false,
+      error: error.response?.data?.error || "Unknown error",
+    };
+  }
+},
   }
 });
