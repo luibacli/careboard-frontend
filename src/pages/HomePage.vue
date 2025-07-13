@@ -1,12 +1,10 @@
 <script setup>
-import { ref, onMounted, computed, } from 'vue';
-import { storeToRefs } from 'pinia';
+import { ref, onMounted, computed } from 'vue';
 import { useSummaryStore } from '../stores/summaryStore';
 import { useOnboardedStore } from '../stores/onBoardedStore';
 
 const summaryStore = useSummaryStore();
 const onBoardedStore = useOnboardedStore();
-
 
 const startDate = ref('');
 const endDate = ref('');
@@ -14,18 +12,8 @@ const currentYear = new Date().getFullYear();
 const selectedYear = ref(currentYear.toString());
 
 const monthLabels = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
 const fpeCounts = computed(() => {
@@ -53,31 +41,30 @@ const fpcCounts = computed(() => {
 });
 
 const fpeCountTotal = computed(() =>
-  summaryStore.summaryData?.fpe?.[0]?.count.toLocaleString() || 0
+  summaryStore.summaryData?.fpe?.[0]?.count || 0
 );
 const fpcCountTotal = computed(() =>
-  summaryStore.summaryData?.fpc?.[0]?.count.toLocaleString() || 0
+  summaryStore.summaryData?.fpc?.[0]?.count || 0
 );
 const labsCountTotal = computed(() =>
-  summaryStore.summaryData?.labs?.[0]?.total.toLocaleString() || 0
+  summaryStore.summaryData?.labs?.[0]?.total || 0
 );
 const medsCountTotal = computed(() =>
-  summaryStore.summaryData?.meds?.[0]?.total.toLocaleString() || 0
+  summaryStore.summaryData?.meds?.[0]?.total || 0
 );
 
-
-onMounted(() => {
-  summaryStore.loadSummary();
-  onBoardedStore.fetchPatients();
+onMounted(async () => {
+  await summaryStore.loadSummary();
+  await onBoardedStore.fetchPatients();
 });
 
-const applyFilter = () => {
+const applyFilter = async () => {
   if (startDate.value && endDate.value) {
-    summaryStore.loadSummary(startDate.value, endDate.value);
-    onBoardedStore.fetchPatients(1, 50, startDate.value, endDate.value);
+    await summaryStore.loadSummary(startDate.value, endDate.value);
+    await onBoardedStore.fetchPatients(1, 50, startDate.value, endDate.value);
   } else {
-    summaryStore.loadSummary();
-    onBoardedStore.fetchPatients();
+    await summaryStore.loadSummary();
+    await onBoardedStore.fetchPatients();
   }
 };
 
@@ -88,113 +75,117 @@ const applyFilter = () => {
     <p class="text-3xl font-bold">Dashboard Summary</p>
 
     <div class="flex flex-col sm:flex-row gap-4 items-end p-3">
-        <div>
-          <label for="startDate" class="font-bold text-xs mb-2">Start Date</label>
-          <DatePicker
-            v-model="startDate"
-            showIcon
-            fluid
-            :showOnFocus="false"
-            inputId="startDate"
-            dateFormat="dd/mm/yy"
-            placeholder="dd/mm/yyyy"
-          />
-        </div>
-        <div>
-          <label for="endDate" class="font-bold text-xs mb-2">End Date</label>
-          <DatePicker
-            v-model="endDate"
-            showIcon
-            fluid
-            :showOnFocus="false"
-            inputId="endDate"
-            dateFormat="dd/mm/yy"
-            placeholder="dd/mm/yyyy"
-          />
-        </div>
-        <Button label="Load Data" severity="info" @click="applyFilter" />
+      <div>
+        <label for="startDate" class="font-bold text-xs mb-2">Start Date</label>
+        <DatePicker
+          v-model="startDate"
+          showIcon
+          fluid
+          :showOnFocus="false"
+          inputId="startDate"
+          dateFormat="dd/mm/yy"
+          placeholder="dd/mm/yyyy"
+        />
+      </div>
+      <div>
+        <label for="endDate" class="font-bold text-xs mb-2">End Date</label>
+        <DatePicker
+          v-model="endDate"
+          showIcon
+          fluid
+          :showOnFocus="false"
+          inputId="endDate"
+          dateFormat="dd/mm/yy"
+          placeholder="dd/mm/yyyy"
+        />
+      </div>
+      <Button label="Load Data" severity="info" @click="applyFilter" />
     </div>
 
     <!-- Loading -->
-    <div v-if="summaryStore.loading" class="text-gray-500">Loading summary data...</div>
+    <div v-if="summaryStore.loading" class="text-gray-500">
+      Loading summary data...
+    </div>
 
     <!-- Error -->
-    <div v-else-if="summaryStore.error" class="text-red-500">{{ summaryStore.error }}</div>
+    <div v-else-if="summaryStore.error" class="text-red-500">
+      {{ summaryStore.error }}
+    </div>
 
     <!-- Data -->
     <div v-else-if="summaryStore.summaryData">
       <!-- KPI Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-  <!-- Konsulta Registered -->
-  <Card class="shadow border border-gray-200">
-    <template #content>
-      <div class="flex items-center space-x-4">
-        <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
-        <div>
-          <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-          <p class="text-2xl font-bold">{{ onBoardedStore.totalPatients.toLocaleString
-          ()}}</p>
-        </div>
+        <!-- Konsulta Registered -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
+                <p class="text-2xl font-bold">
+                  {{ onBoardedStore.totalPatients.toLocaleString() }}
+                </p>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- First Patient Encounter -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-user-edit text-green-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
+                <p class="text-2xl font-bold">{{ fpeCountTotal.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Consultation -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-comments text-purple-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
+                <p class="text-2xl font-bold">{{ fpcCountTotal.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Laboratories Provided -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-shield text-yellow-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">Laboratories Provided</h2>
+                <p class="text-2xl font-bold">{{ labsCountTotal.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Medicines Provided -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-heart-fill text-red-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
+                <p class="text-2xl font-bold">{{ medsCountTotal.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
       </div>
-    </template>
-  </Card>
 
-  <!-- First Patient Encounter -->
-  <Card class="shadow border border-gray-200">
-    <template #content>
-      <div class="flex items-center space-x-4">
-        <i class="pi pi-user-edit text-green-500 text-2xl"></i>
-        <div>
-          <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
-          <p class="text-2xl font-bold">{{ fpeCountTotal }}</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-
-  <!-- Consultation -->
-  <Card class="shadow border border-gray-200">
-    <template #content>
-      <div class="flex items-center space-x-4">
-        <i class="pi pi-comments text-purple-500 text-2xl"></i>
-        <div>
-          <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
-          <p class="text-2xl font-bold">{{ fpcCountTotal }}</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-
-  <!-- Laboratories Provided -->
-  <Card class="shadow border border-gray-200">
-    <template #content>
-      <div class="flex items-center space-x-4">
-        <i class="pi pi-shield text-yellow-500 text-2xl"></i>
-        <div>
-          <h2 class="text-sm text-gray-500 font-semibold">Laboratories Provided</h2>
-          <p class="text-2xl font-bold">{{ labsCountTotal }}</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-
-  <!-- Medicines Provided -->
-  <Card class="shadow border border-gray-200">
-    <template #content>
-      <div class="flex items-center space-x-4">
-        <i class="pi pi-heart-fill text-red-500 text-2xl"></i>
-        <div>
-          <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
-          <p class="text-2xl font-bold">{{ medsCountTotal }}</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-</div>
-
-
-          <!-- Monthly FPE & FPC Chart -->
-          <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8">
+      <!-- Monthly FPE & FPC Chart -->
+      <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8">
         <div class="flex flex-col sm:flex-row justify-between items-end mb-2">
           <h2 class="text-sm text-gray-500">Monthly FPE & FPC</h2>
           <div>
@@ -229,7 +220,7 @@ const applyFilter = () => {
               }
             ]
           }"
-          style="width: 1000px; height: 500px;"
+          style="width: 1000px; height: 420px;"
         />
       </div>
 
@@ -237,15 +228,16 @@ const applyFilter = () => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
         <!-- FPE vs FPC Pie Chart -->
         <div class="bg-white rounded shadow p-4 flex flex-col items-center">
-          <h2 class="text-sm text-gray-500 mb-2">FPE vs FPC Distribution</h2>
+          <h2 class="text-sm text-gray-500 mb-2">Registered vs FPE vs FPC Distribution</h2>
           <Chart
-            type="pie"
+            v-if="summaryStore.summaryData"
+            type="doughnut"
             :data="{
-              labels: ['FPE', 'FPC'],
+              labels: ['Registered', 'FPE', 'FPC'],
               datasets: [
                 {
-                  data: [fpeCountTotal, fpcCountTotal],
-                  backgroundColor: ['#3b82f6', '#f59e0b']
+                  data: [onBoardedStore.totalPatients,fpeCountTotal, fpcCountTotal],
+                  backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
                 }
               ]
             }"
@@ -257,6 +249,7 @@ const applyFilter = () => {
         <div class="bg-white rounded shadow p-4 flex flex-col items-center">
           <h2 class="text-sm text-gray-500 mb-2">Labs vs Meds Provided</h2>
           <Chart
+            v-if="summaryStore.summaryData"
             type="pie"
             :data="{
               labels: ['Labs', 'Meds'],
@@ -271,8 +264,6 @@ const applyFilter = () => {
           />
         </div>
       </div>
-
-  
     </div>
 
     <!-- No data -->
