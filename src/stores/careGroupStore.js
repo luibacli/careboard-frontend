@@ -20,9 +20,12 @@ export const useCareGroupStore = defineStore("careGroup", {
             status: "active"
     },
     careGroupTotalPatients: 0,
+    summaryByRegion: 0,
     totalRegisteredByRegion: 0,
     totalFpeByRegion: 0,
     totalFpcByRegion: 0,
+    monthlyFpeByRegion: 0,
+    monthlyFpcByRegion: 0,
     allCareGroupsByRegion: [],
     publicCareGroupsByRegion: [],
     privateCareGroupsByRegion: [],
@@ -57,6 +60,7 @@ export const useCareGroupStore = defineStore("careGroup", {
       totalMeds: (state) => state.careGroupSummary?.meds?.[0]?.total || 0,
       totalFpePending: (state) => state.careGroupSummary?.fpePending?.[0]?.count || 0,
       totalFpcPending: (state) => state.careGroupSummary?.fpcPending?.[0]?.count || 0,
+    
     },
     actions: {
         async fetchCareGroups() {
@@ -121,6 +125,10 @@ export const useCareGroupStore = defineStore("careGroup", {
           }
       },
         
+      async fetchSummaryByRegion() {
+
+      },
+        
       async fetchCareGroupSummaryByRegion(regionName, startDate = null, endDate = null) {
         this.loading = true
         try {
@@ -129,14 +137,17 @@ export const useCareGroupStore = defineStore("careGroup", {
             params.start = startDate;
             params.end = endDate;
           }
+          const summary = await api.get("/encounters/summary", { params });
           const res = await api.get("/encounters/region-caregroups-summary", { params });
+          
+          this.summaryByRegion = summary.data
           this.allCareGroupsByRegion = res.data
           this.publicCareGroupsByRegion = res.data.filter(cg => cg.type === "public")
           this.privateCareGroupsByRegion = res.data.filter(cg => cg.type === "private")
 
-          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + cg.totals.registered, 0).toLocaleString();
-          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpe, 0).toLocaleString();
-          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpc, 0).toLocaleString();
+          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + cg.totals.registered, 0);
+          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpe, 0);
+          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpc, 0);
 
 
         } catch (error) {

@@ -44,20 +44,20 @@
       <!-- TOTAL SUMMARY -->
       <div class="bg-white rounded shadow p-4 mb-6 flex flex-col items-center">
         <div>
-           <p class="text-xl font-bold">
+           <p class="text-2xl font-bold">
               {{ regionName }} Total Summary
            </p>
                 
         </div>
 
         <div v-if="newFormattedEndDate && newFormattedStartDate" class="mb-4">
-          <p class="text-sm">
+          <p class="text-md font-medium">
             {{ newFormattedStartDate }} - {{ newFormattedEndDate }}
           </p>
         </div>
 
         <div v-else class="mb-2">
-          <p class="text-sm font-medium">
+          <p class="text-md font-medium">
             {{ currentDate}}
           </p>
         </div>
@@ -78,7 +78,7 @@
                   <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-                    <p class="text-2xl font-bold">{{ totalRegisteredByRegion }}</p>
+                    <p class="text-2xl font-bold">{{ totalRegisteredByRegion.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -90,7 +90,7 @@
                   <i class="pi pi-user-edit text-green-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
-                    <p class="text-2xl font-bold">{{ totalFpeByRegion }}</p>
+                    <p class="text-2xl font-bold">{{ totalFpeByRegion.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -102,20 +102,73 @@
                   <i class="pi pi-comments text-purple-500 text-2xl"></i>
                   <div>
                     <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
-                    <p class="text-2xl font-bold">{{ totalFpcByRegion }}</p>
+                    <p class="text-2xl font-bold">{{ totalFpcByRegion.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
             </Card>
           </div>
+      <div class="flex flex-row  mb-4 gap-9 p-4 justify-center">
+        <div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Year</label>
+            <select
+              v-model="selectedYear"
+              @change="applyFilter"
+              class="border border-gray-300 rounded px-2 py-1 text-sm"
+            >
+              <option disabled value="">Select Year</option>
+              <option>2022</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option>2025</option>
+            </select>
+          </div>
+          <Chart
+          type="bar"
+          :data="{
+            labels: monthLabels,
+            datasets: [
+              {
+                label: 'FPE',
+                data: fpeCounts,
+                backgroundColor: '#3b82f6'
+              },
+              {
+                label: 'FPC',
+                data: fpcCounts,
+                backgroundColor: '#f59e0b'
+              }
+            ]
+          }"
+          style="width: 650px;"
+       
+        />
+        </div>
+        <div>
+          Chart 2
+                 <Chart
+            type="doughnut"
+            :data="{
+              labels: ['Registered', 'FPE', 'FPC'],
+              datasets: [
+                {
+                  data: [totalRegisteredByRegion, totalFpeByRegion, totalFpcByRegion],
+                  backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
+                }
+              ]
+            }"
+          />
+        </div>
+      </div>
 
       <!-- PUBLIC FACILITIES -->
       <div class="bg-white rounded shadow p-4 mb-6">
         <h2 class="text-lg font-semibold mb-2">Public Facilities Totals</h2>
         <div class="flex gap-4 mb-4">
-          <span>👥 Registered: <strong>{{ totalPublic.registered }}</strong></span>
-          <span>📝 FPE: <strong>{{ totalPublic.fpe }}</strong></span>
-          <span>💬 FPC: <strong>{{ totalPublic.fpc }}</strong></span>
+          <span>👥 Registered: <strong>{{ totalPublic.registered.toLocaleString() }}</strong></span>
+          <span>📝 FPE: <strong>{{ totalPublic.fpe.toLocaleString() }}</strong></span>
+          <span>💬 FPC: <strong>{{ totalPublic.fpc.toLocaleString() }}</strong></span>
         </div>
         <DataTable :value="publicCareGroupsByRegion" class="w-full" stripedRows>
           <Column field="client_name" header="Care Group" />
@@ -129,9 +182,9 @@
       <div class="bg-white rounded shadow p-4">
         <h2 class="text-lg font-semibold mb-2">Private Facilities Totals</h2>
         <div class="flex gap-4 mb-4">
-          <span>👥 Registered: <strong>{{ totalPrivate.registered }}</strong></span>
-          <span>📝 FPE: <strong>{{ totalPrivate.fpe }}</strong></span>
-          <span>💬 FPC: <strong>{{ totalPrivate.fpc }}</strong></span>
+          <span>👥 Registered: <strong>{{ totalPrivate.registered.toLocaleString() }}</strong></span>
+          <span>📝 FPE: <strong>{{ totalPrivate.fpe.toLocaleString() }}</strong></span>
+          <span>💬 FPC: <strong>{{ totalPrivate.fpc.toLocaleString() }}</strong></span>
         </div>
         <DataTable :value="privateCareGroupsByRegion" class="w-full" stripedRows>
           <Column field="client_name" header="Care Group" />
@@ -155,20 +208,22 @@ const careGroupStore = useCareGroupStore();
 const route = useRoute();
 
 const totalPublic = computed(() => ({
-  registered: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0).toLocaleString(),
-  fpe: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0).toLocaleString(),
-  fpc: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0).toLocaleString(),
+  registered: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0),
+  fpe: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0),
+  fpc: publicCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0),
 }));
 
 const totalPrivate = computed(() => ({
-  registered: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0).toLocaleString(),
-  fpe: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0).toLocaleString(),
-  fpc: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0).toLocaleString(),
+  registered: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.registered, 0),
+  fpe: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpe, 0),
+  fpc: privateCareGroupsByRegion.value.reduce((sum, cg) => sum + cg.totals.fpc, 0),
 }));
+
 
 const { fetchCareGroupSummaryByRegion } = careGroupStore;
 const {
   allCareGroupsByRegion,
+  summaryByRegion,
   loading,
   publicCareGroupsByRegion,
   privateCareGroupsByRegion,
@@ -219,10 +274,43 @@ function applyFilter() {
   }
 }
 
+const monthLabels = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+const selectedYear = ref(new Date().getFullYear());
+
+const fpeCounts = computed(() => {
+  const countsByMonth = {};
+  if (summaryByRegion.value?.monthlyFpeFpc) {
+   summaryByRegion.value?.monthlyFpeFpc.forEach(item => {
+      if (item._id.tranche === "1" && item._id.year == selectedYear.value) {
+        countsByMonth[item._id.month] = item.count;
+      }
+    });
+  }
+  return Array.from({ length: 12 }, (_, i) => countsByMonth[i + 1] || 0);
+});
+
+
+
+const fpcCounts = computed(() => {
+  const countsByMonth = {};
+  if (summaryByRegion.value?.monthlyFpeFpc) {
+  summaryByRegion.value?.monthlyFpeFpc.forEach(item => {
+      if (item._id.tranche === "2" && item._id.year == selectedYear.value) {
+        countsByMonth[item._id.month] = item.count;
+      }
+    });
+  }
+  return Array.from({ length: 12 }, (_, i) => countsByMonth[i + 1] || 0);
+});
 onMounted(async () => {
   await fetchCareGroupSummaryByRegion(regionName);
   const date = new Date();
   currentDate.value = formatDate(date);
+  console.log("monthly fpe fpc:", fpeCounts.value, fpcCounts.value);
 
 });
 </script>
