@@ -156,9 +156,9 @@ function formatDate(dateInput) {
 }
 
 function applyFilter() {
-  if (starDate.value && endDate.value) {
-    fetchCareGroupSummaryByRegion(regionName, starDate.value, endDate.value);
-    newFormattedStartDate.value = formatDate(starDate.value);
+  if (startDate.value && endDate.value) {
+    fetchCareGroupSummaryByRegion(regionName, startDate.value, endDate.value);
+    newFormattedStartDate.value = formatDate(startDate.value);
     newFormattedEndDate.value = formatDate(endDate.value);
     console.log("From: ", newFormattedStartDate.value, " TO: ", newFormattedEndDate.value);
   } else {
