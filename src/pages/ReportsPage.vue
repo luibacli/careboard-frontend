@@ -42,21 +42,72 @@
     <div v-else ref="reportContent">
       <div></div>
       <!-- TOTAL SUMMARY -->
-      <div class="bg-white rounded shadow p-4 mb-6">
-        <div v-show="newFormattedEndDate && newFormattedStartDate" class="mb-6">
-          <p class="text-xl">
+      <div class="bg-white rounded shadow p-4 mb-6 flex flex-col items-center">
+        <div>
+           <p class="text-xl font-bold">
+              {{ regionName }} Total Summary
+           </p>
+                
+        </div>
+
+        <div v-if="newFormattedEndDate && newFormattedStartDate" class="mb-4">
+          <p class="text-sm">
             {{ newFormattedStartDate }} - {{ newFormattedEndDate }}
           </p>
         </div>
-        <h2 class="text-lg font-semibold mb-2">
-          {{ regionName }} Overall Totals (All Facilities)
-        </h2>
-        <div class="flex gap-4">
-          <span>👥 Registered: <strong>{{ totalRegisteredByRegion }}</strong></span>
-          <span>📝 FPE: <strong>{{ totalFpeByRegion }}</strong></span>
-          <span>💬 FPC: <strong>{{ totalFpcByRegion }}</strong></span>
+
+        <div v-else class="mb-2">
+          <p class="text-sm font-medium">
+            {{ currentDate}}
+          </p>
         </div>
+  
+      
+
       </div>
+      
+
+      <!-- KPI Cards -->
+
+      <!-- Konsulta Registered -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <!-- Konsulta Registered -->
+            <Card class="shadow border border-gray-200">
+              <template #content>
+                <div class="flex items-center space-x-4">
+                  <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
+                  <div>
+                    <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
+                    <p class="text-2xl font-bold">{{ totalRegisteredByRegion }}</p>
+                  </div>
+                </div>
+              </template>
+            </Card>
+            <!-- First Patient Encounter -->
+            <Card class="shadow border border-gray-200">
+              <template #content>
+                <div class="flex items-center space-x-4">
+                  <i class="pi pi-user-edit text-green-500 text-2xl"></i>
+                  <div>
+                    <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
+                    <p class="text-2xl font-bold">{{ totalFpeByRegion }}</p>
+                  </div>
+                </div>
+              </template>
+            </Card>
+            <!-- Consultation -->
+            <Card class="shadow border border-gray-200">
+              <template #content>
+                <div class="flex items-center space-x-4">
+                  <i class="pi pi-comments text-purple-500 text-2xl"></i>
+                  <div>
+                    <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
+                    <p class="text-2xl font-bold">{{ totalFpcByRegion }}</p>
+                  </div>
+                </div>
+              </template>
+            </Card>
+          </div>
 
       <!-- PUBLIC FACILITIES -->
       <div class="bg-white rounded shadow p-4 mb-6">
@@ -155,6 +206,8 @@ function formatDate(dateInput) {
   });
 }
 
+const currentDate = ref(null);
+
 function applyFilter() {
   if (startDate.value && endDate.value) {
     fetchCareGroupSummaryByRegion(regionName, startDate.value, endDate.value);
@@ -168,5 +221,8 @@ function applyFilter() {
 
 onMounted(async () => {
   await fetchCareGroupSummaryByRegion(regionName);
+  const date = new Date();
+  currentDate.value = formatDate(date);
+
 });
 </script>

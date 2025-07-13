@@ -185,9 +185,9 @@ const applyFilter = async () => {
       </div>
 
       <!-- Monthly FPE & FPC Chart -->
-      <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8">
+      <div v-if="!startDate && !endDate" class="bg-white rounded shadow p-4 mt-8 flex items-center">
         <div class="flex flex-col sm:flex-row justify-between items-end mb-2">
-          <h2 class="text-sm text-gray-500">Monthly FPE & FPC</h2>
+          <!-- <h2 class="text-sm text-gray-500">Monthly FPE & FPC</h2> -->
           <div>
             <label class="block text-xs text-gray-500 mb-1">Year</label>
             <select
