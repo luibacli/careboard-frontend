@@ -39,8 +39,7 @@
     </div>
 
     <div v-if="loading" class="text-gray-500">Loading...</div>
-    <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <div v-else ref="reportContent">
+    <div v-else-if="summaryByRegion" ref="reportContent">
       <div></div>
       <!-- TOTAL SUMMARY -->
       <div class="bg-white rounded shadow p-4 mb-6 flex flex-col items-center">
@@ -198,6 +197,7 @@
         </DataTable>
       </div>
     </div>
+    <div v-else="error" class="text-red-500">{{ error }}</div>
   </div>
 </template>
 
@@ -234,7 +234,8 @@ const {
   privateCareGroupsByRegion,
   totalFpcByRegion,
   totalFpeByRegion,
-  totalRegisteredByRegion
+  totalRegisteredByRegion,
+  error
 } = storeToRefs(careGroupStore);
 
 const regionName = route.params.name;
@@ -278,10 +279,6 @@ async function downloadPDF() {
     isExporting.value = false;
   }
 }
-
-
-
-
 
 
 
@@ -345,10 +342,20 @@ const fpcCounts = computed(() => {
   return Array.from({ length: 12 }, (_, i) => countsByMonth[i + 1] || 0);
 });
 onMounted(async () => {
-  await fetchCareGroupSummaryByRegion(regionName);
-  const date = new Date();
-  currentDate.value = formatDate(date);
-  console.log("monthly fpe fpc:", fpeCounts.value, fpcCounts.value);
+  
+  if (regionName) {
+    setTimeout(async () => {
+   
+      await fetchCareGroupSummaryByRegion(regionName);
+    }, 1000);
+  
+    const date = new Date();
+    currentDate.value = formatDate(date);
+  }
+
+  console.log("error", error.value);
+
+
 
 });
 </script>

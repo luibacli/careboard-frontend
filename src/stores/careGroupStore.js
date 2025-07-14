@@ -145,13 +145,14 @@ export const useCareGroupStore = defineStore("careGroup", {
           this.publicCareGroupsByRegion = res.data.filter(cg => cg.type === "public")
           this.privateCareGroupsByRegion = res.data.filter(cg => cg.type === "private")
 
-          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + cg.totals.registered, 0);
-          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpe, 0);
-          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + cg.totals.fpc, 0);
+          this.totalRegisteredByRegion = res.data.reduce((sum, cg) => sum + (cg.totals?.registered ?? 0), 0);
+          this.totalFpeByRegion = res.data.reduce((sum, cg) => sum + (cg.totals?.fpe ?? 0), 0);
+          this.totalFpcByRegion = res.data.reduce((sum, cg) => sum + (cg.totals?.fpc ?? 0), 0);
 
 
         } catch (error) {
           console.error("Failed to fetch each care group summary by region", error)
+          this.error = error.message
         } finally {
           this.loading = false;
         }
@@ -171,6 +172,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             this.careGroupTotalPatients = res.data.total;
           } catch (error) {
             console.error("Failed to fetch patients by client name", error);
+    
           } finally {
             this.loading = false;
           }
