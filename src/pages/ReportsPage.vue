@@ -32,6 +32,7 @@
           label="Download PDF"
           icon="pi pi-download"
           severity="danger"
+          :disabled="isExporting"
           @click="downloadPDF"
         />
       </div>
@@ -108,6 +109,8 @@
               </template>
             </Card>
           </div>
+
+
       <div class="flex flex-row  mb-4 gap-9 p-4 justify-center">
         <div>
           <div>
@@ -198,11 +201,13 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref } from 'vue';
+import { onMounted, computed, ref, nextTick } from 'vue';
 import { useCareGroupStore } from '../stores/careGroupStore';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import html2pdf from "html2pdf.js";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const careGroupStore = useCareGroupStore();
 const route = useRoute();
@@ -235,17 +240,146 @@ const {
 const regionName = route.params.name;
 const reportContent = ref(null);
 
-function downloadPDF() {
-  const element = reportContent.value;
-  const opt = {
-    margin: 0.3,
-    filename: `${regionName}-summary.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  html2pdf().from(element).set(opt).save();
+function convertChartsToImages(element) {
+  const canvases = element.querySelectorAll("canvas");
+  canvases.forEach((canvas) => {
+    const img = document.createElement("img");
+    img.src = canvas.toDataURL("image/png");
+    img.style.maxWidth = "100%";
+    img.style.height = "auto";
+    canvas.parentNode.replaceChild(img, canvas);
+  });
 }
+
+
+function replaceOklchColors(element) {
+  const allElements = element.querySelectorAll("*");
+  allElements.forEach(node => {
+    const computed = getComputedStyle(node);
+    if (computed) {
+      if (computed.backgroundColor && computed.backgroundColor.includes("oklch")) {
+        node.style.backgroundColor = "white";
+      }
+      if (computed.color && computed.color.includes("oklch")) {
+        node.style.color = "black";
+      }
+    }
+  });
+}
+
+function fixOklchColorsInDOM(element) {
+  const allElements = element.querySelectorAll("*");
+  allElements.forEach(node => {
+    const computed = getComputedStyle(node);
+    if (computed.backgroundColor?.includes("oklch")) {
+      node.style.backgroundColor = "white";
+    }
+    if (computed.color?.includes("oklch")) {
+      node.style.color = "black";
+    }
+  });
+}
+
+
+
+
+const isExporting = ref(false);
+
+// async function downloadPDF() {
+//   isExporting.value = true;
+//   try {
+//     console.log("Export started...");
+//     await nextTick();
+//     await new Promise(resolve => setTimeout(resolve, 1000));
+
+//     const element = reportContent.value;
+//     if (!element) {
+//       alert("Report content not ready!");
+//       return;
+//     }
+
+//     const cloned = element.cloneNode(true);
+//     replaceOklchColors(cloned);
+//     convertChartsToImages(cloned);
+
+//     console.log("Starting html2pdf export...");
+
+//     const opt = {
+//       margin: 0.3,
+//       filename: `${regionName}-summary.pdf`,
+//       image: { type: "jpeg", quality: 0.98 },
+//       html2canvas: { scale: 2, useCORS: true, logging: true },
+//       jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+//     };
+
+//     // Use outputPdf() to get the Blob and control download manually
+//     html2pdf()
+//       .from(cloned)
+//       .set(opt)
+//       .outputPdf()
+//       .then(pdf => {
+//         console.log("PDF generated successfully!");
+//         const blob = new Blob([pdf], { type: "application/pdf" });
+//         const link = document.createElement("a");
+//         link.href = URL.createObjectURL(blob);
+//         link.download = opt.filename;
+//         link.click();
+//       })
+//       .catch(err => {
+//         console.error("Error generating PDF:", err);
+//         alert("Error generating PDF: " + err.message);
+//       });
+//   } finally {
+//     isExporting.value = false;
+//   }
+// }
+
+
+async function downloadPDF() {
+  isExporting.value = true;
+  try {
+    console.log("Capturing report...");
+
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const element = reportContent.value;
+    if (!element) {
+      alert("Report content not ready!");
+      return;
+    }
+
+    // Fix colors in the live DOM
+    fixOklchColorsInDOM(element);
+
+    // Render the image of the live DOM node
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${regionName}-summary.pdf`);
+
+    console.log("PDF generated successfully!");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    alert("Error generating PDF: " + (error?.message ?? error));
+  } finally {
+    isExporting.value = false;
+  }
+}
+
+
+
+
 
 const startDate = ref("");
 const endDate = ref("");
