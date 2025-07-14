@@ -56,12 +56,12 @@
             {{ newFormattedStartDate }} - {{ newFormattedEndDate }}
           </p>
         </div>
-
+<!-- 
         <div v-else class="mb-2">
           <p class="text-md font-medium">
             {{ currentDate}}
           </p>
-        </div>
+        </div> -->
   
       
 
@@ -113,7 +113,7 @@
 
       <div class="flex flex-row  mb-4 gap-9 p-4 justify-center">
         <div>
-          <div>
+          <div class="mb-2">
             <label class="block text-xs text-gray-500 mb-1">Year</label>
             <select
               v-model="selectedYear"
@@ -144,12 +144,11 @@
               }
             ]
           }"
-          style="width: 650px;"
+          style="width: 450px;"
        
         />
         </div>
         <div>
-          Chart 2
                  <Chart
             type="doughnut"
             :data="{
@@ -160,7 +159,9 @@
                   backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
                 }
               ]
+              
             }"
+            style="width: 300px;"
           />
         </div>
       </div>
@@ -206,8 +207,7 @@ import { useCareGroupStore } from '../stores/careGroupStore';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import html2pdf from "html2pdf.js";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+
 
 const careGroupStore = useCareGroupStore();
 const route = useRoute();
@@ -240,106 +240,16 @@ const {
 const regionName = route.params.name;
 const reportContent = ref(null);
 
-function convertChartsToImages(element) {
-  const canvases = element.querySelectorAll("canvas");
-  canvases.forEach((canvas) => {
-    const img = document.createElement("img");
-    img.src = canvas.toDataURL("image/png");
-    img.style.maxWidth = "100%";
-    img.style.height = "auto";
-    canvas.parentNode.replaceChild(img, canvas);
-  });
-}
-
-
-function replaceOklchColors(element) {
-  const allElements = element.querySelectorAll("*");
-  allElements.forEach(node => {
-    const computed = getComputedStyle(node);
-    if (computed) {
-      if (computed.backgroundColor && computed.backgroundColor.includes("oklch")) {
-        node.style.backgroundColor = "white";
-      }
-      if (computed.color && computed.color.includes("oklch")) {
-        node.style.color = "black";
-      }
-    }
-  });
-}
-
-function fixOklchColorsInDOM(element) {
-  const allElements = element.querySelectorAll("*");
-  allElements.forEach(node => {
-    const computed = getComputedStyle(node);
-    if (computed.backgroundColor?.includes("oklch")) {
-      node.style.backgroundColor = "white";
-    }
-    if (computed.color?.includes("oklch")) {
-      node.style.color = "black";
-    }
-  });
-}
 
 
 
 
 const isExporting = ref(false);
 
-// async function downloadPDF() {
-//   isExporting.value = true;
-//   try {
-//     console.log("Export started...");
-//     await nextTick();
-//     await new Promise(resolve => setTimeout(resolve, 1000));
-
-//     const element = reportContent.value;
-//     if (!element) {
-//       alert("Report content not ready!");
-//       return;
-//     }
-
-//     const cloned = element.cloneNode(true);
-//     replaceOklchColors(cloned);
-//     convertChartsToImages(cloned);
-
-//     console.log("Starting html2pdf export...");
-
-//     const opt = {
-//       margin: 0.3,
-//       filename: `${regionName}-summary.pdf`,
-//       image: { type: "jpeg", quality: 0.98 },
-//       html2canvas: { scale: 2, useCORS: true, logging: true },
-//       jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
-//     };
-
-//     // Use outputPdf() to get the Blob and control download manually
-//     html2pdf()
-//       .from(cloned)
-//       .set(opt)
-//       .outputPdf()
-//       .then(pdf => {
-//         console.log("PDF generated successfully!");
-//         const blob = new Blob([pdf], { type: "application/pdf" });
-//         const link = document.createElement("a");
-//         link.href = URL.createObjectURL(blob);
-//         link.download = opt.filename;
-//         link.click();
-//       })
-//       .catch(err => {
-//         console.error("Error generating PDF:", err);
-//         alert("Error generating PDF: " + err.message);
-//       });
-//   } finally {
-//     isExporting.value = false;
-//   }
-// }
-
-
 async function downloadPDF() {
   isExporting.value = true;
   try {
-    console.log("Capturing report...");
-
+    console.log("Starting PDF export...");
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -349,26 +259,18 @@ async function downloadPDF() {
       return;
     }
 
-    // Fix colors in the live DOM
-    fixOklchColorsInDOM(element);
+    const opt = {
+      margin: 0.3,
+      filename: `${regionName}-summary.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "in", format: "Legal", orientation: "portrait" }
+    };
 
-    // Render the image of the live DOM node
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true
-    });
+    // Generate and save PDF
+    html2pdf().from(element).set(opt).save();
 
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`${regionName}-summary.pdf`);
-
-    console.log("PDF generated successfully!");
+    console.log("PDF export done!");
   } catch (error) {
     console.error("Error generating PDF:", error);
     alert("Error generating PDF: " + (error?.message ?? error));
@@ -376,6 +278,8 @@ async function downloadPDF() {
     isExporting.value = false;
   }
 }
+
+
 
 
 
