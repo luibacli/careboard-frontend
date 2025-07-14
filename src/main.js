@@ -15,7 +15,7 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import Dialog from 'primevue/dialog';
 import TabPanel from 'primevue/tabpanel';
-
+import ProgressBar from "primevue/progressbar";
 import { Card, Button, Select, InputText, DatePicker,} from 'primevue'
 import { createPinia } from 'pinia'
 
@@ -50,6 +50,7 @@ app.component('TabList', TabList),
 app.component('TabPanels', TabPanels),
     app.component('TabPanel', TabPanel)
 app.component('Dialog', Dialog),
+app.component('ProgressBar', ProgressBar)
     
 
 

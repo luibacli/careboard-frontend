@@ -29,6 +29,7 @@ export const useCareGroupStore = defineStore("careGroup", {
     allCareGroupsByRegion: [],
     publicCareGroupsByRegion: [],
     privateCareGroupsByRegion: [],
+    patientsByCareGroup: [],
 
           
         dialogVisible: false,
@@ -169,6 +170,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             }
         
             const res = await api.get("/upload/onboarded/patients", { params });
+            this.patientsByCareGroup = res.data.data;
             this.careGroupTotalPatients = res.data.total;
           } catch (error) {
             console.error("Failed to fetch patients by client name", error);

@@ -12,6 +12,8 @@ export const useOnboardedStore = defineStore('onboarded', {
     result: null,
     patients: [],
     allPatients: [],
+    clientPatients: [],
+    clientPatientsTotal: [],
     users: [],
     allUsers: [],
     presenters: [],
@@ -85,7 +87,26 @@ export const useOnboardedStore = defineStore('onboarded', {
         this.loading = false;
       }
     },
-    
+
+    async fetchPatientsByClient(clientName, page = 1, limit = 50, startDate = null, endDate = null) {
+      this.loading = true;
+      const params = { facility: clientName, page, limit }
+      if (startDate, endDate) {
+        params.start = startDate;
+        params.end = endDate;
+      }
+      try {
+        const response = await api.get('/upload/onboarded/', {params});
+        this.clientPatients = response.data;
+        this.clientPatientsTotal = response.data.toal
+      } catch (err) {
+        console.error('Error fetching patients by client:', err);
+        this.error = 'Failed to fetch patients by client';
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async fetchUsers(page = 1, limit = 50) {
       this.loading = true;
       this.error = null;
