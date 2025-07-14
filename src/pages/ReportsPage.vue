@@ -342,20 +342,11 @@ const fpcCounts = computed(() => {
   return Array.from({ length: 12 }, (_, i) => countsByMonth[i + 1] || 0);
 });
 onMounted(async () => {
-  
   if (regionName) {
-    setTimeout(async () => {
-   
-      await fetchCareGroupSummaryByRegion(regionName);
-    }, 1000);
-  
+    await fetchCareGroupSummaryByRegion(regionName);
     const date = new Date();
     currentDate.value = formatDate(date);
   }
-
-  console.log("error", error.value);
-
-
-
 });
+
 </script>
