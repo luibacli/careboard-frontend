@@ -1,7 +1,9 @@
 <template>
+  <Toast />
   <div v-if="loading" class="text-gray-500">Loading data...</div>
   <div v-else-if="error" class="text-red-500">{{ error }}</div>
   <div v-else-if="careGroup" class="p-6 space-y-6">
+
     <h1 class="text-2xl font-bold mb-4">{{ careGroup.client_name }}</h1>
     <Tabs value="0">
       <TabList>
@@ -195,8 +197,29 @@
           </div>
         </TabPanel>
         <TabPanel value="3">
-          <div>
-            <p class="text-2xl font-bold">SAP Validation Content</p>
+          <Dialog v-model:visible="showSapUpload" :style="{ width: '50rem' }" modal header="Upload SAP">
+            <div class="flex flex-row gap-4 mb-4">
+              <Select v-model="selectedClient" :options="clientsOption" optionLabel="label" optionValue="value"
+                placeholder="Select Care Group" class="w-60 mr-2" />
+              <label for="datepicker" class="font-bold block"> Period </label>
+              <DatePicker id="datepicker" v-model="selectedPeriod" dateFormat="mm/yy" />
+              <Button label="Choose Files" @click="triggerFileInput" />
+              <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleSAPFileUpload" />
+            </div>
+
+          </Dialog>
+          <div v-if="sapUploading" class="mt-2 mb-2">
+            <ProgressBar :value="progressPercentageSAP" showValue>{{ progressPercentageSAP }}%
+            </ProgressBar>
+          </div>
+
+          <div class="flex flex-row justify-between">
+            <div>
+              <Button label="Validate SAP" severity="danger" />
+            </div>
+            <div>
+              <Button label="Upload SAP" @click="showSapUpload = true" />
+            </div>
           </div>
         </TabPanel>
         <TabPanel value="4">
@@ -257,10 +280,14 @@ const {
   fetchCareGroupById,
   fetchEncountersByClientName,
   fetchSummaryByClientName,
-  fetchPatientsByClientName
+  fetchPatientsByClientName,
+  uploadSAP,
+  connectSocket,
+  fetchAllCareGroups
 } = careGroupStore;
 const {
   careGroup,
+  careGroups,
   encounters,
   loading,
   loadingEncounters,
@@ -274,12 +301,24 @@ const {
   totalFpcPending,
   careGroupTotalPatients,
   patientsByCareGroup,
+  sapProgressPercentage,
+  sapCompleted,
+  sapProcessed,
+  sapResult,
+  sapUploadTotal,
+  showSapUpload,
+  sapUploading,
+  clientsOption,
+  selectedClient,
+  selectedPeriod
 } = storeToRefs(careGroupStore);
 
 const startDate = ref('');
 const endDate = ref('');
 const currentYear = new Date().getFullYear();
 const selectedYear = ref(currentYear.toString());
+
+
 
 const monthLabels = [
   "January",
@@ -363,6 +402,35 @@ async function handleOnboardedFileUpload(event) {
   event.target.value = null; // reset input
 }
 
+
+async function handleSAPFileUpload(event) {
+
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const result = await uploadSAP(file, selectedClient.value, selectedPeriod.value);
+
+
+  if (result.success) {
+    showSapUpload.value = false;
+    toast.add({
+      severity: "success",
+      summary: "Upload Complete",
+      detail: `${result.message} • Inserted: ${result.inserted}, Skipped: ${result.skipped}`,
+      life: 5000,
+    });
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Upload Failed",
+      detail: result.error,
+      life: 5000,
+    });
+  }
+
+  event.target.value = null; // reset input
+}
+
 // encounters progress percentage
 const progressPercentageEncounters = computed(() =>
   encounterStore.total ? Math.round((encounterStore.processed / encounterStore.total) * 100) : 0
@@ -372,17 +440,29 @@ const progressPercentageOnboarded = computed(() =>
   onBoardedStore.total ? Math.round((onBoardedStore.processed / onBoardedStore.total) * 100) : 0
 );
 
+const progressPercentageSAP = computed(() =>
+  sapUploadTotal.value ? Math.round((sapProcessed.value / sapUploadTotal.value) * 100) : 0
+);
+
 
 
 
 onMounted(async () => {
-  encounterStore.connectSocket();
-  onBoardedStore.connectSocket();
+
   try {
+    // connect sockets
+    connectSocket();
+    encounterStore.connectSocket();
+    onBoardedStore.connectSocket();
     // Fetch care group
     await fetchCareGroupById(route.params.id);
     console.log("Caregroup Data", careGroup.value);
 
+    // Fetch care groups
+    await fetchAllCareGroups();
+    console.log("care groups", careGroups.value);
+
+    console.log("client options:", clientsOption.value);
     // Fetch encounters
     if (careGroup.value?.client_name) {
       await fetchEncountersByClientName(careGroup.value.client_name);
@@ -396,6 +476,8 @@ onMounted(async () => {
     console.error(err);
     error.value = "Failed to load care group or encounters.";
   }
+
+  console.log("Sockets", sapCompleted.value, sapProcessed.value, sapProgressPercentage.value, sapUploadTotal.value);
 
 });
 </script>

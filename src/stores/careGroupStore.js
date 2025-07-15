@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "../lib/axios";
+import { io } from "socket.io-client";
 
 
 
@@ -30,6 +31,19 @@ export const useCareGroupStore = defineStore("careGroup", {
     publicCareGroupsByRegion: [],
     privateCareGroupsByRegion: [],
     patientsByCareGroup: [],
+    socket: null,
+    socketId: null,
+    missingSap: [],
+    sapUploading: false,
+    sapProcessed: 0,
+    sapProgressPercentage: 0,
+    sapUploadTotal: 0,
+    showSapUpload: false,
+    sapCompleted: false,
+    sapResult: null,
+    selectedClient: null,
+    clientsOption: [],
+    selectedPeriod: "",
 
           
         dialogVisible: false,
@@ -71,13 +85,30 @@ export const useCareGroupStore = defineStore("careGroup", {
             const res = await api.get("/caregroups");
           
             // Optional delay to make the spinner visible
-            setTimeout(() => {
-              this.allCareGroups = res.data;
-              this.careGroups = res.data;
+        setTimeout(() => {
+          this.allCareGroups = res.data;
+          this.careGroups = res.data;
+      
+
                 this.loading = false;
                 console.log("Care groups fetched:", res.data);
             }, 300);
-          },
+      },
+      
+
+      async fetchAllCareGroups() {
+        try {
+          const res = await api.get("/caregroups");
+             this.careGroups = res.data;
+          this.clientsOption = res.data.map(cg => ({
+            label: cg.client_name,
+            value: cg.client_name,
+          }))
+          
+        } catch (error) {
+          console.log("Failed to fetch caregroups", error);
+        }
+      },
           
           
           async fetchCareGroupById(id) {
@@ -286,7 +317,75 @@ export const useCareGroupStore = defineStore("careGroup", {
               main: "Luzon",
               status: "active"
             };
-          }
-          
+      },
+        
+      startUpload() {
+        this.sapUploading = true;
+        this.sapCompleted = false;
+        this.sapProcessed = 0;
+        this.sapUploadTotal = 0;
+        this.sapResult = null;
+      },
+          connectSocket() {
+      this.socket = io('http://localhost:3000');
+      this.socket.on('connect', () => {
+        this.socketId = this.socket.id;
+      });
+      this.socket.on('uploadProgress', (data) => {
+        this.sapProcessed = data.processed;
+        this.sapUploadTotal = data.total;
+        this.showSapUpload = false;
+      });
+      this.socket.on('uploadComplete', (data) => {
+        this.sapUploading = false;
+        this.sapCompleted = true;
+        this.sapResult = data;
+      });
+    },
+        
+  async uploadSAP(file, client, period) {
+  if (!file) {
+    return { success: false, error: "No file selected." };
+  }
+
+  if (!client || !period) {
+    return { success: false, error: "Please select client and period." };
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  this.startUpload();
+
+  try {
+    const response = await api.post(
+      `/upload/upload-sap?socketId=${encodeURIComponent(this.socketId)}&client=${encodeURIComponent(client)}&period=${encodeURIComponent(period)}`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    const { inserted, skipped, message } = response.data;
+
+    return {
+      success: true,
+      inserted,
+      skipped,
+      message,
+    };
+  } catch (error) {
+    console.error("Upload error:", error);
+    
+
+    return {
+      success: false,
+      error: error.response?.data?.error || "Unknown error",
+    };
+  }
+},
+
+        
+     
     }
 });
