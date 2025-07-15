@@ -197,15 +197,18 @@
           </div>
         </TabPanel>
         <TabPanel value="3">
-          <Dialog v-model:visible="showSapUpload" :style="{ width: '50rem' }" modal header="Upload SAP">
-            <div class="flex flex-row gap-4 mb-4">
-              <Select v-model="selectedClient" :options="clientsOption" optionLabel="label" optionValue="value"
-                placeholder="Select Care Group" class="w-60 mr-2" />
-              <label for="datepicker" class="font-bold block"> Period </label>
-              <DatePicker id="datepicker" v-model="selectedPeriod" dateFormat="mm/yy" />
+          <Dialog v-model:visible="showSapUpload" :style="{ width: '35rem' }" modal header="Upload SAP">
+            <div v-if="sapUploading" class="flex items-center gap-4 mb-4">
+              <p class="text-md ">{{ sapProcessed }} / {{ sapUploadTotal }}</p>
+            </div>
+
+            <div v-else class="flex flex-row gap-4 mb-4 justify-between">
+              <label for="datepicker" class="font-bold block"> Date Period </label>
+              <DatePicker id="datepicker" v-model="selectedPeriod" dateFormat="mm/yy" placeholder="mm/yy" />
               <Button label="Choose Files" @click="triggerFileInput" />
               <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleSAPFileUpload" />
             </div>
+
 
           </Dialog>
           <div v-if="sapUploading" class="mt-2 mb-2">
@@ -335,6 +338,27 @@ const monthLabels = [
   "December"
 ];
 
+function formatDateToMMYYYY(input) {
+  let date;
+  if (input instanceof Date) {
+    date = input;
+  } else if (typeof input === "string") {
+    date = new Date(input);
+  } else {
+    return "";
+  }
+
+  if (isNaN(date)) return "";
+
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${year}`;
+}
+
+const formattedPeriod = computed(() =>
+  formatDateToMMYYYY(selectedPeriod.value)
+);
+
 const applyFilter = () => {
   if (startDate.value && endDate.value) {
     fetchSummaryByClientName(careGroup.value.client_name, startDate.value, endDate.value);
@@ -408,11 +432,10 @@ async function handleSAPFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  const result = await uploadSAP(file, selectedClient.value, selectedPeriod.value);
+  const result = await uploadSAP(file, careGroup.value.client_name, formattedPeriod.value);
 
 
   if (result.success) {
-    showSapUpload.value = false;
     toast.add({
       severity: "success",
       summary: "Upload Complete",
@@ -477,7 +500,6 @@ onMounted(async () => {
     error.value = "Failed to load care group or encounters.";
   }
 
-  console.log("Sockets", sapCompleted.value, sapProcessed.value, sapProgressPercentage.value, sapUploadTotal.value);
 
 });
 </script>

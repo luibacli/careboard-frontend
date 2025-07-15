@@ -334,11 +334,12 @@ export const useCareGroupStore = defineStore("careGroup", {
       this.socket.on('uploadProgress', (data) => {
         this.sapProcessed = data.processed;
         this.sapUploadTotal = data.total;
-        this.showSapUpload = false;
+        
       });
       this.socket.on('uploadComplete', (data) => {
         this.sapUploading = false;
         this.sapCompleted = true;
+        this.showSapUpload = false;
         this.sapResult = data;
       });
     },
