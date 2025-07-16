@@ -26,7 +26,7 @@
             <div>
               <label for="endDate" class="font-bold text-xs mb-2">End Date</label>
               <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate" dateFormat="dd/mm/yy"
-                placeholder="dd/mm/yyyy" />
+                placeholder="dd/mm/yy" />
             </div>
             <Button label="Load Data" severity="info" @click="applyFilter" />
           </div>
@@ -359,9 +359,23 @@ const formattedPeriod = computed(() =>
   formatDateToMMYYYY(selectedPeriod.value)
 );
 
+function formatDateYMD(dateInput) {
+  const date = new Date(dateInput);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+
+
 const applyFilter = () => {
   if (startDate.value && endDate.value) {
-    fetchSummaryByClientName(careGroup.value.client_name, startDate.value, endDate.value);
+    fetchSummaryByClientName(careGroup.value.client_name, formatDateYMD(startDate.value), formatDateYMD(endDate.value));
+    console.log("caregroup summary filter", careGroupSummary.value);
+    console.log("Dates:", startDate.value, endDate.value);
     fetchPatientsByClientName(careGroup.value.client_name, startDate.value, endDate.value);
   } else {
     fetchEncountersByClientName(careGroup.value.client_name);
@@ -489,7 +503,7 @@ onMounted(async () => {
     // Fetch encounters
     if (careGroup.value?.client_name) {
       await fetchEncountersByClientName(careGroup.value.client_name);
-      await fetchSummaryByClientName(careGroup.value.client_name);
+      await fetchSummaryByClientName(careGroup.value.client_name,);
       // Fetch Patients
       await fetchPatientsByClientName(careGroup.value.client_name);
 

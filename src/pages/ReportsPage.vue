@@ -5,36 +5,17 @@
       <div class="flex flex-col sm:flex-row gap-4 items-end p-3">
         <div>
           <label for="startDate" class="font-bold text-xs mb-2">Start Date</label>
-          <DatePicker
-            v-model="startDate"
-            showIcon
-            fluid
-            :showOnFocus="false"
-            inputId="startDate"
-            dateFormat="dd/mm/yy"
-            placeholder="dd/mm/yyyy"
-          />
+          <DatePicker v-model="startDate" showIcon fluid :showOnFocus="false" inputId="startDate" dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy" />
         </div>
         <div>
           <label for="endDate" class="font-bold text-xs mb-2">End Date</label>
-          <DatePicker
-            v-model="endDate"
-            showIcon
-            fluid
-            :showOnFocus="false"
-            inputId="endDate"
-            dateFormat="dd/mm/yy"
-            placeholder="dd/mm/yyyy"
-          />
+          <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate" dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy" />
         </div>
         <Button label="Load Data" severity="info" @click="applyFilter" />
-        <Button
-          label="Download PDF"
-          icon="pi pi-download"
-          severity="danger"
-          :disabled="isExporting"
-          @click="downloadPDF"
-        />
+        <Button label="Download PDF" icon="pi pi-download" severity="danger" :disabled="isExporting"
+          @click="downloadPDF" />
       </div>
     </div>
 
@@ -44,10 +25,10 @@
       <!-- TOTAL SUMMARY -->
       <div class="bg-white rounded shadow p-4 mb-6 flex flex-col items-center">
         <div>
-           <p class="text-2xl font-bold">
-              {{ regionName }} Total Summary
-           </p>
-                
+          <p class="text-2xl font-bold">
+            {{ regionName }} Total Summary
+          </p>
+
         </div>
 
         <div v-if="newFormattedEndDate && newFormattedStartDate" class="mb-4">
@@ -55,70 +36,67 @@
             {{ newFormattedStartDate }} - {{ newFormattedEndDate }}
           </p>
         </div>
-<!-- 
+        <!-- 
         <div v-else class="mb-2">
           <p class="text-md font-medium">
             {{ currentDate}}
           </p>
         </div> -->
-  
-      
+
+
 
       </div>
-      
+
 
       <!-- KPI Cards -->
 
       <!-- Konsulta Registered -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <!-- Konsulta Registered -->
-            <Card class="shadow border border-gray-200">
-              <template #content>
-                <div class="flex items-center space-x-4">
-                  <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
-                  <div>
-                    <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
-                    <p class="text-2xl font-bold">{{ totalRegisteredByRegion.toLocaleString() }}</p>
-                  </div>
-                </div>
-              </template>
-            </Card>
-            <!-- First Patient Encounter -->
-            <Card class="shadow border border-gray-200">
-              <template #content>
-                <div class="flex items-center space-x-4">
-                  <i class="pi pi-user-edit text-green-500 text-2xl"></i>
-                  <div>
-                    <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
-                    <p class="text-2xl font-bold">{{ totalFpeByRegion.toLocaleString() }}</p>
-                  </div>
-                </div>
-              </template>
-            </Card>
-            <!-- Consultation -->
-            <Card class="shadow border border-gray-200">
-              <template #content>
-                <div class="flex items-center space-x-4">
-                  <i class="pi pi-comments text-purple-500 text-2xl"></i>
-                  <div>
-                    <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
-                    <p class="text-2xl font-bold">{{ totalFpcByRegion.toLocaleString() }}</p>
-                  </div>
-                </div>
-              </template>
-            </Card>
-          </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        <!-- Konsulta Registered -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-user-plus text-blue-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">Konsulta Registered</h2>
+                <p class="text-2xl font-bold">{{ totalRegisteredByRegion.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+        <!-- First Patient Encounter -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-user-edit text-green-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">First Patient Encounter</h2>
+                <p class="text-2xl font-bold">{{ totalFpeByRegion.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+        <!-- Consultation -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-comments text-purple-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
+                <p class="text-2xl font-bold">{{ totalFpcByRegion.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
 
 
       <div class="flex flex-row  mb-4 gap-9 p-4 justify-center">
         <div>
           <div class="mb-2">
             <label class="block text-xs text-gray-500 mb-1">Year</label>
-            <select
-              v-model="selectedYear"
-              @change="applyFilter"
-              class="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
+            <select v-model="selectedYear" @change="applyFilter"
+              class="border border-gray-300 rounded px-2 py-1 text-sm">
               <option disabled value="">Select Year</option>
               <option>2022</option>
               <option>2023</option>
@@ -126,9 +104,7 @@
               <option>2025</option>
             </select>
           </div>
-          <Chart
-          type="bar"
-          :data="{
+          <Chart type="bar" :data="{
             labels: monthLabels,
             datasets: [
               {
@@ -142,26 +118,19 @@
                 backgroundColor: '#f59e0b'
               }
             ]
-          }"
-          style="width: 450px;"
-       
-        />
+          }" style="width: 450px;" />
         </div>
         <div>
-                 <Chart
-            type="doughnut"
-            :data="{
-              labels: ['Registered', 'FPE', 'FPC'],
-              datasets: [
-                {
-                  data: [totalRegisteredByRegion, totalFpeByRegion, totalFpcByRegion],
-                  backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
-                }
-              ]
-              
-            }"
-            style="width: 300px;"
-          />
+          <Chart type="doughnut" :data="{
+            labels: ['Registered', 'FPE', 'FPC'],
+            datasets: [
+              {
+                data: [totalRegisteredByRegion, totalFpeByRegion, totalFpcByRegion],
+                backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
+              }
+            ]
+
+          }" style="width: 300px;" />
         </div>
       </div>
 
@@ -298,9 +267,19 @@ function formatDate(dateInput) {
 
 const currentDate = ref(null);
 
+function formatDateYMD(dateInput) {
+  const date = new Date(dateInput);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function applyFilter() {
   if (startDate.value && endDate.value) {
-    fetchCareGroupSummaryByRegion(regionName, startDate.value, endDate.value);
+    fetchCareGroupSummaryByRegion(regionName, formatDateYMD(startDate.value), formatDateYMD(endDate.value));
     newFormattedStartDate.value = formatDate(startDate.value);
     newFormattedEndDate.value = formatDate(endDate.value);
     console.log("From: ", newFormattedStartDate.value, " TO: ", newFormattedEndDate.value);
@@ -319,7 +298,7 @@ const selectedYear = ref(new Date().getFullYear());
 const fpeCounts = computed(() => {
   const countsByMonth = {};
   if (summaryByRegion.value?.monthlyFpeFpc) {
-   summaryByRegion.value?.monthlyFpeFpc.forEach(item => {
+    summaryByRegion.value?.monthlyFpeFpc.forEach(item => {
       if (item._id.tranche === "1" && item._id.year == selectedYear.value) {
         countsByMonth[item._id.month] = item.count;
       }
@@ -333,7 +312,7 @@ const fpeCounts = computed(() => {
 const fpcCounts = computed(() => {
   const countsByMonth = {};
   if (summaryByRegion.value?.monthlyFpeFpc) {
-  summaryByRegion.value?.monthlyFpeFpc.forEach(item => {
+    summaryByRegion.value?.monthlyFpeFpc.forEach(item => {
       if (item._id.tranche === "2" && item._id.year == selectedYear.value) {
         countsByMonth[item._id.month] = item.count;
       }

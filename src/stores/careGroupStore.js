@@ -150,6 +150,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             const res = await api.get("/encounters/summary", { params });
             this.careGroupSummary = res.data;
             console.log("client summar", this.careGroupSummary);
+             console.log("api:", res.request.responseURL);
           } catch (error) {
             console.error("Failed to fetch client summary", error);
           } finally {
