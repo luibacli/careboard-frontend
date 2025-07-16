@@ -208,8 +208,6 @@
               <Button label="Choose Files" @click="triggerFileInput" />
               <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleSAPFileUpload" />
             </div>
-
-
           </Dialog>
           <div v-if="sapUploading" class="mt-2 mb-2">
             <ProgressBar :value="progressPercentageSAP" showValue>{{ progressPercentageSAP }}%
@@ -224,6 +222,25 @@
               <Button label="Upload SAP" @click="showSapUpload = true" />
             </div>
           </div>
+          <!-- Fix: Move TabPanels outside TabList for vertical stacking -->
+          <Tabs>
+            <TabList>
+              <Tab value="0">SAP 1</Tab>
+              <Tab value="1">Encounters</Tab>
+              <Tab value="2">Discrepancies</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel value="0">
+                <p>SAP1</p>
+              </TabPanel>
+              <TabPanel value="1">
+                <p>Encounters Content</p>
+              </TabPanel>
+              <TabPanel value="2">
+                <p>Discrepancies content</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </TabPanel>
         <TabPanel value="4">
           <div>
@@ -369,13 +386,18 @@ function formatDateYMD(dateInput) {
   return `${year}-${month}-${day}`;
 }
 
+const newStartDate = computed(() =>
+  formatDateYMD(startDate.value)
+)
 
-
+const newEndDate = computed(() =>
+  formatDateYMD(endDate.value)
+)
 const applyFilter = () => {
   if (startDate.value && endDate.value) {
-    fetchSummaryByClientName(careGroup.value.client_name, formatDateYMD(startDate.value), formatDateYMD(endDate.value));
+    fetchSummaryByClientName(careGroup.value.client_name, newStartDate.value, newEndDate.value);
     console.log("caregroup summary filter", careGroupSummary.value);
-    console.log("Dates:", startDate.value, endDate.value);
+    console.log("Dates:", newEndDate.value, newEndDate.value);
     fetchPatientsByClientName(careGroup.value.client_name, startDate.value, endDate.value);
   } else {
     fetchEncountersByClientName(careGroup.value.client_name);
