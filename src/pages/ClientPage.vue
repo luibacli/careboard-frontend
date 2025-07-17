@@ -249,8 +249,10 @@
               <Button label="Submit" severity="info" @click="handleValidation" />
             </div>
           </Dialog>
-          <!-- Fix: Move TabPanels outside TabList for vertical stacking -->
-          <Tabs>
+
+
+
+          <Tabs value="0">
             <TabList>
               <Tab value="0">Discrepancies</Tab>
               <Tab value="1">Encounters</Tab>
@@ -262,10 +264,8 @@
                   responsiveLayout="scroll" showGridlines paginator :rows="50">
                   <template #header>
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                      <span class="text-xl font-bold">Total: {{ sapValidationData.discrepanciesCount }}</span>
-                      <Button label="Download" size="small" />
-
-
+                      <span class="text-xl font-bold">Total:</span>
+                      <Button label="Download" size="small" severity="secondary" />
                     </div>
                   </template>
                   <Column field="client_name" header="Client Name" />
@@ -598,22 +598,18 @@ onMounted(async () => {
     onBoardedStore.connectSocket();
     // Fetch care group
     await fetchCareGroupById(route.params.id);
-    console.log("Caregroup Data", careGroup.value);
-
     // Fetch care groups
     await fetchAllCareGroups();
-    console.log("care groups", careGroups.value);
-
-    console.log("client options:", clientsOption.value);
     // Fetch encounters
     if (careGroup.value?.client_name) {
       await fetchEncountersByClientName(careGroup.value.client_name);
       await fetchSummaryByClientName(careGroup.value.client_name,);
       // Fetch Patients
       await fetchPatientsByClientName(careGroup.value.client_name);
-
-      console.log("Patients by Client:", patientsByCareGroup.value);
     }
+    discrepancies.value = [];
+    encounterData.value = [];
+    sapData.value = [];
   } catch (err) {
     console.error(err);
     error.value = "Failed to load care group or encounters.";

@@ -16,6 +16,10 @@ import TabPanels from 'primevue/tabpanels';
 import Dialog from 'primevue/dialog';
 import TabPanel from 'primevue/tabpanel';
 import ProgressBar from "primevue/progressbar";
+import Accordion from 'primevue/accordion';
+import AccordionPanel from 'primevue/accordionpanel';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionContent from 'primevue/accordioncontent';
 import { Card, Button, Select, InputText, DatePicker,} from 'primevue'
 import { createPinia } from 'pinia'
 
@@ -51,6 +55,10 @@ app.component('TabPanels', TabPanels),
     app.component('TabPanel', TabPanel)
 app.component('Dialog', Dialog),
 app.component('ProgressBar', ProgressBar)
+app.component('Accordion', Accordion)
+app.component('AccordionPanel', AccordionPanel)
+app.component('AccordionHeader', AccordionHeader)
+app.component('AccordionConten', AccordionContent)
     
 
 
