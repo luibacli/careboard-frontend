@@ -216,22 +216,66 @@
 
           <div class="flex flex-row justify-between">
             <div>
-              <Button label="Validate SAP" severity="danger" />
+              <Button label="Validate SAP" severity="warn" @click="showValidateSapDialog = true;" />
             </div>
             <div>
               <Button label="Upload SAP" @click="showSapUpload = true" />
             </div>
           </div>
+          <!-- Dialog for SAP Validation -->
+          <Dialog v-model:visible="showValidateSapDialog" :style="{ width: '38rem' }" modal header="Validate SAP">
+            <div class="grid grid-cols-2 p-4 gap-4 items-center">
+              <div>
+                <label for="startDate" class="font-bold text-xs mb-2">Encounter Start Date</label>
+                <DatePicker v-model="startDate" showIcon fluid :showOnFocus="false" inputId="startDate"
+                  dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+              </div>
+              <div>
+                <label for="endDate" class="font-bold text-xs mb-2">Encounter End Date</label>
+                <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate"
+                  dateFormat="dd/mm/yy" placeholder="dd/mm/yy" />
+              </div>
+              <div>
+                <Select v-model="selectedTranche" :options="trancheOption" optionLabel="label" optionValue="value"
+                  placeholder="Select Tranche" class="w-full" />
+              </div>
+              <div>
+                <DatePicker id="datepicker" v-model="selectedPeriod" dateFormat="mm/yy" placeholder="SAP Period"
+                  class="w-full" />
+              </div>
+            </div>
+            <div class="m-2 flex justify-end">
+              <Button label="Submit" severity="info" @click="handleValidation" />
+            </div>
+          </Dialog>
           <!-- Fix: Move TabPanels outside TabList for vertical stacking -->
           <Tabs>
             <TabList>
-              <Tab value="0">SAP 1</Tab>
+              <Tab value="0">Discrepancies</Tab>
               <Tab value="1">Encounters</Tab>
-              <Tab value="2">Discrepancies</Tab>
+              <Tab value="2">SAP</Tab>
             </TabList>
             <TabPanels>
               <TabPanel value="0">
-                <p>SAP1</p>
+                <DataTable :value="discrepancies" class="w-full text-sm" stripedRows scrollable
+                  responsiveLayout="scroll" showGridlines paginator :rows="50">
+                  <template #header>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="text-xl font-bold">Total: {{ sapValidationData.discrepanciesCount }}</span>
+                      <Button label="Download" size="small" />
+
+
+                    </div>
+                  </template>
+                  <Column field="client_name" header="Client Name" />
+                  <Column field="pin" header="PIN" />
+                  <Column field="patient_name" header="Patient Name" />
+                  <Column field="member_type" header="Member Type" />
+                  <Column field="encounter_date" header="Date of Encounter" />
+                  <Column field="transaction_no" header="PhilHealth Transaction No." />
+                  <Column field="transmittal_id" header="Transmittal ID" />
+                  <Column field="case_no" header="Case No" />
+                </DataTable>
               </TabPanel>
               <TabPanel value="1">
                 <p>Encounters Content</p>
@@ -303,7 +347,8 @@ const {
   fetchPatientsByClientName,
   uploadSAP,
   connectSocket,
-  fetchAllCareGroups
+  fetchAllCareGroups,
+  validateSap
 } = careGroupStore;
 const {
   careGroup,
@@ -330,7 +375,14 @@ const {
   sapUploading,
   clientsOption,
   selectedClient,
-  selectedPeriod
+  selectedPeriod,
+  showValidateSapDialog,
+  discrepancies,
+  encounterData,
+  sapData,
+  trancheOption,
+  selectedTranche,
+  sapValidationData
 } = storeToRefs(careGroupStore);
 
 const startDate = ref('');
@@ -375,6 +427,8 @@ function formatDateToMMYYYY(input) {
 const formattedPeriod = computed(() =>
   formatDateToMMYYYY(selectedPeriod.value)
 );
+
+
 
 function formatDateYMD(dateInput) {
   const date = new Date(dateInput);
@@ -435,6 +489,23 @@ async function handleFileUpload(event) {
   }
 
   event.target.value = null; // reset input
+}
+
+async function handleValidation() {
+  const result = await validateSap(careGroup.value.client_name, newStartDate.value, newEndDate.value, selectedTranche.value, formatDateToMMYYYY(selectedPeriod.value))
+  if (result.success) {
+    toast.add({
+      severity: "success",
+      summary: "Validation Completed",
+      life: 5000,
+    })
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Validation Failed",
+      life: 5000
+    })
+  }
 }
 
 async function handleOnboardedFileUpload(event) {

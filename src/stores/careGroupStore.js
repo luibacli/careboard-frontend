@@ -33,15 +33,24 @@ export const useCareGroupStore = defineStore("careGroup", {
     patientsByCareGroup: [],
     socket: null,
     socketId: null,
-    missingSap: [],
     sapUploading: false,
     sapProcessed: 0,
     sapProgressPercentage: 0,
     sapUploadTotal: 0,
     showSapUpload: false,
+    showValidateSapDialog: false,
     sapCompleted: false,
     sapResult: null,
+    sapValidationData: null,
+    discrepancies: [],
+    encounterData: [],
+    sapData: [],
+    selectedTranche: null,
     selectedClient: null,
+    trancheOption: [
+      { label: "1", value: "1" },
+      { label: "2", value: "2"}
+    ],
     clientsOption: [],
     selectedPeriod: "",
 
@@ -386,6 +395,36 @@ export const useCareGroupStore = defineStore("careGroup", {
     };
   }
 },
+
+  
+      async validateSap(client, startDate = null, endDate = null, tranche, period) {
+        try {
+          const params = {};
+          if (!client || !startDate || !endDate || !tranche || !period) {
+            throw new Error("All fields are required")
+          } else {
+            params.client = client
+            params.start = startDate
+            params.end = endDate
+            params.tranche = tranche
+            params.period = period
+          }
+
+          const res = await api.get("/upload/validate-sap", { params })
+          this.sapValidationData = res.data
+          this.discrepancies = res.data.discrepancies
+          this.encounterData = res.data.encounterData
+          this.sapData = res.data.sapData
+          this.showValidateSapDialog = false;
+          return { success: true}
+      
+        } catch (error) {
+          console.error("Failed to validate SAP", error);
+          return { success: false}
+          
+        }
+    
+  }
 
         
      
