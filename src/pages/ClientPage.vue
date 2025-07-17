@@ -128,9 +128,10 @@
             <template #header>
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span class="text-xl font-bold">Encounters</span>
-                <Button label="Upload Encounters" icon="pi pi-plus" @click="triggerFileInput"
+                <Button label="Upload Encounters" icon="pi pi-plus" @click="encounterTriggerFileInput"
                   :disabled="encounterStore.uploading" />
-                <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleFileUpload" />
+                <input ref="encounterFileInput" type="file" accept=".csv" style="display: none"
+                  @change="handleFileUpload" />
 
               </div>
             </template>
@@ -164,9 +165,9 @@
               <template #header>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <span class="text-xl font-bold">Master List</span>
-                  <Button label="Upload Patients" icon="pi pi-plus" @click="triggerFileInput"
+                  <Button label="Upload Patients" icon="pi pi-plus" @click="onboardedTriggerFileInputFileInput"
                     :disabled="onBoardedStore.uploading" />
-                  <input ref="fileInput" type="file" accept=".csv" style="display: none"
+                  <input ref="onboardedFileInput" type="file" accept=".csv" style="display: none"
                     @change="handleOnboardedFileUpload" />
 
                 </div>
@@ -205,8 +206,8 @@
             <div v-else class="flex flex-row gap-4 mb-4 justify-between">
               <label for="datepicker" class="font-bold block"> Date Period </label>
               <DatePicker id="datepicker" v-model="selectedPeriod" dateFormat="mm/yy" placeholder="mm/yy" />
-              <Button label="Choose Files" @click="triggerFileInput" />
-              <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleSAPFileUpload" />
+              <Button label="Choose Files" @click="sapTriggerFileInput" />
+              <input ref="sapFileInput" type="file" accept=".csv" style="display: none" @change="handleSAPFileUpload" />
             </div>
           </Dialog>
           <div v-if="sapUploading" class="mt-2 mb-2">
@@ -460,11 +461,22 @@ const applyFilter = () => {
 };
 
 
-const fileInput = ref(null);
+const encounterFileInput = ref(null);
+const onboardedFileInput = ref(null);
+const sapFileInput = ref(null);
 
-function triggerFileInput() {
-  fileInput.value.click();
-}
+function encounterTriggerFileInput() {
+  encounterFileInput.value.click();
+};
+
+function onboardedTriggerFileInput() {
+  onboardedFileInput.value.click();
+};
+
+function sapTriggerFileInput() {
+  sapFileInput.value.click();
+};
+
 
 async function handleFileUpload(event) {
   const file = event.target.files[0];
