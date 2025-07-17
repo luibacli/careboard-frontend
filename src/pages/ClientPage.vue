@@ -124,7 +124,7 @@
             </ProgressBar>
           </div>
           <DataTable :value="encounters" :loading="loadingEncounters" class="w-full text-sm" stripedRows scrollable
-            responsiveLayout="scroll" showGridlines paginator :rows="25">
+            responsiveLayout="scroll" showGridlines paginator :rows="25" size="small">
             <template #header>
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span class="text-xl font-bold">Encounters</span>
@@ -161,7 +161,7 @@
               </ProgressBar>
             </div>
             <DataTable :value="patientsByCareGroup" :loading="loadingEncounters" class="w-full text-sm" stripedRows
-              scrollable responsiveLayout="scroll" showGridlines paginator :rows="25">
+              scrollable responsiveLayout="scroll" showGridlines paginator :rows="25" size="small">
               <template #header>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <span class="text-xl font-bold">Master List</span>
@@ -258,7 +258,7 @@
             </TabList>
             <TabPanels>
               <TabPanel value="0">
-                <div class="flex justify-end mb-2">
+                <div class="flex justify-end mb-1">
                   <Button label="Download" size="small" severity="secondary" />
                 </div>
                 <DataTable :value="discrepancies" class="w-full text-sm" stripedRows scrollable
@@ -291,10 +291,77 @@
                 </DataTable>
               </TabPanel>
               <TabPanel value="1">
-                <p>Encounters Content</p>
+                <div class="flex justify-end mb-1">
+                  <Button label="Download" size="small" severity="secondary" />
+                </div>
+                <DataTable :value="encounterData" class="w-full text-sm" stripedRows scrollable
+                  responsiveLayout="scroll" showGridlines paginator :rows="25" size="small">
+                  <template #header>
+                    <div class="flex flex-wrap items-center gap-9" v-show="discrepancies[0]">
+                      <div>
+                        <p class="text-md"><span class="font-bold">Encounters Period:</span> {{
+                          formattedEncounterStartDate
+                        }} - {{
+                            formattedEncounterEndDate }}</p>
+                      </div>
+
+                      <div>
+                        <p class="text-md"><span class="font-bold">Encounters Total:</span> {{
+                          encounterData.length }}</p>
+                      </div>
+                    </div>
+                  </template>
+                  <Column field="appointment_date" header="Appointment Date" sortable style="min-width: 160px;" />
+                  <Column field="start_date" header="Date Submitted" sortable style="min-width: 160px;" />
+                  <Column field="philhealth_transaction_no" header="Transaction No." sortable
+                    style="min-width: 140px;" />
+                  <Column field="philhealth_case_no" header="Case No." sortable style="min-width: 120px;" />
+                  <Column field="patient_name" header="Patient Name" sortable style="min-width: 180px;" />
+                  <Column field="patient_age" header="Age" sortable style="min-width: 50px;" />
+                  <Column field="patient_gender" header="Gender" sortable style="min-width: 100px;" />
+                  <Column field="clinician_name" header="Clinician" sortable style="min-width: 180px;" />
+                  <Column field="icd_codes" header="ICD Codes" sortable style="min-width: 200px;" />
+                  <Column field="lab_orders_total" header="Labs Total" sortable style="min-width: 100px;" />
+                  <Column field="medications" header="Medications" sortable style="min-width: 150px;" />
+                  <template #empty>
+                    <div class="text-center text-gray-500 py-6">
+                      No encounters found for this client.
+                    </div>
+                  </template>
+                </DataTable>
               </TabPanel>
               <TabPanel value="2">
-                <p>Discrepancies content</p>
+                <div class="flex justify-end mb-1">
+                  <Button label="Download" size="small" severity="secondary" />
+                </div>
+                <DataTable :value="sapData" class="w-full text-sm" stripedRows scrollable responsiveLayout="scroll"
+                  showGridlines paginator :rows="25" size="small">
+                  <template #header>
+                    <div class="flex flex-wrap items-center gap-9" v-show="discrepancies[0]">
+                      <div>
+                        <p class="text-md"><span class="font-bold">SAP Period:</span> {{ formattedPeriodDate }}</p>
+                      </div>
+
+                      <div>
+                        <p class="text-md"><span class="font-bold">SAP Total:</span> {{
+                          sapData.length }}</p>
+                      </div>
+                    </div>
+                  </template>
+                  <Column field="no" header="No." />
+                  <Column field="sapClient" header="Client Name" />
+                  <Column field="pin" header="PIN" />
+                  <Column field="name" header="Patient Name" />
+                  <Column field="memberType" header="Member Type" />
+                  <Column field="dateOfRegistration" header="Date Of Registration" />
+                  <Column field="dateOfEncounter" header="Date of Encounter" />
+
+                  <template #empty>
+                    <div class="text-center text-gray-500 py-6">
+                      No SAP found for this client.
+                    </div>
+                  </template>
+                </DataTable>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -393,9 +460,7 @@ const {
   discrepancies,
   encounterData,
   sapData,
-  trancheOption,
-  selectedTranche,
-  sapValidationData
+
 } = storeToRefs(careGroupStore);
 
 const startDate = ref('');
