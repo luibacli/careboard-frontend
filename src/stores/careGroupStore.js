@@ -397,16 +397,15 @@ export const useCareGroupStore = defineStore("careGroup", {
 },
 
   
-      async validateSap(client, startDate = null, endDate = null, tranche, period) {
+      async validateSap(client, startDate = null, endDate = null, period) {
         try {
           const params = {};
-          if (!client || !startDate || !endDate || !tranche || !period) {
+          if (!client || !startDate || !endDate || !period) {
             throw new Error("All fields are required")
           } else {
             params.client = client
             params.start = startDate
             params.end = endDate
-            params.tranche = tranche
             params.period = period
           }
 

@@ -165,7 +165,7 @@
               <template #header>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <span class="text-xl font-bold">Master List</span>
-                  <Button label="Upload Patients" icon="pi pi-plus" @click="onboardedTriggerFileInputFileInput"
+                  <Button label="Upload Patients" icon="pi pi-plus" @click="onboardedTriggerFileInput"
                     :disabled="onBoardedStore.uploading" />
                   <input ref="onboardedFileInput" type="file" accept=".csv" style="display: none"
                     @change="handleOnboardedFileUpload" />
@@ -237,17 +237,15 @@
                   dateFormat="dd/mm/yy" placeholder="dd/mm/yy" />
               </div>
               <div>
-                <Select v-model="selectedTranche" :options="trancheOption" optionLabel="label" optionValue="value"
-                  placeholder="Select Tranche" class="w-full" />
-              </div>
-              <div>
-                <DatePicker id="datepicker" v-model="selectedPeriod" dateFormat="mm/yy" placeholder="SAP Period"
+                <label for="sapPeriod" class="font-bold text-xs mb-2">SAP Period</label>
+                <DatePicker id="sapPeriod" v-model="selectedPeriod" dateFormat="mm/yy" placeholder="SAP Period"
                   class="w-full" />
               </div>
+              <div class="m-2 flex justify-end">
+                <Button label="Submit" severity="info" @click="handleValidation" />
+              </div>
             </div>
-            <div class="m-2 flex justify-end">
-              <Button label="Submit" severity="info" @click="handleValidation" />
-            </div>
+
           </Dialog>
 
 
@@ -260,12 +258,26 @@
             </TabList>
             <TabPanels>
               <TabPanel value="0">
+                <div class="flex justify-end mb-2">
+                  <Button label="Download" size="small" severity="secondary" />
+                </div>
                 <DataTable :value="discrepancies" class="w-full text-sm" stripedRows scrollable
-                  responsiveLayout="scroll" showGridlines paginator :rows="50">
+                  responsiveLayout="scroll" showGridlines paginator :rows="50" size="small">
                   <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                      <span class="text-xl font-bold">Total:</span>
-                      <Button label="Download" size="small" severity="secondary" />
+                    <div class="flex flex-wrap items-center gap-9" v-show="discrepancies[0]">
+                      <div>
+                        <p class="text-md"><span class="font-bold">Encounter Period:</span> {{
+                          formattedEncounterStartDate
+                        }} - {{
+                            formattedEncounterEndDate }}</p>
+                      </div>
+                      <div>
+                        <p class="text-md"><span class="font-bold">SAP Period:</span> {{ formattedPeriodDate }}</p>
+                      </div>
+                      <div>
+                        <p class="text-md"><span class="font-bold">Discrepancies:</span> {{
+                          discrepancies.length }}</p>
+                      </div>
                     </div>
                   </template>
                   <Column field="client_name" header="Client Name" />
@@ -408,6 +420,15 @@ const monthLabels = [
   "December"
 ];
 
+function formatDate(dateInput) {
+  if (!dateInput) return '';
+  return dateInput.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
 function formatDateToMMYYYY(input) {
   let date;
   if (input instanceof Date) {
@@ -428,6 +449,15 @@ function formatDateToMMYYYY(input) {
 const formattedPeriod = computed(() =>
   formatDateToMMYYYY(selectedPeriod.value)
 );
+
+const formattedEncounterStartDate = computed(() =>
+  formatDate(startDate.value)
+);
+
+const formattedEncounterEndDate = computed(() => formatDate(endDate.value))
+
+const formattedPeriodDate = computed(() => formatDateToMMYYYY(selectedPeriod.value))
+
 
 
 
@@ -504,7 +534,7 @@ async function handleFileUpload(event) {
 }
 
 async function handleValidation() {
-  const result = await validateSap(careGroup.value.client_name, newStartDate.value, newEndDate.value, selectedTranche.value, formatDateToMMYYYY(selectedPeriod.value))
+  const result = await validateSap(careGroup.value.client_name, newStartDate.value, newEndDate.value, formatDateToMMYYYY(selectedPeriod.value))
   if (result.success) {
     toast.add({
       severity: "success",
