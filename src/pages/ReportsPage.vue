@@ -147,6 +147,7 @@
           <Column field="totals.registered" header="Registered" />
           <Column field="totals.fpe" header="FPE" />
           <Column field="totals.fpc" header="FPC" />
+          <Column field="totals.submissions" header="Tranche 1" />
         </DataTable>
       </div>
 
@@ -163,6 +164,7 @@
           <Column field="totals.registered" header="Registered" />
           <Column field="totals.fpe" header="FPE" />
           <Column field="totals.fpc" header="FPC" />
+          <Column field="totals.submissions" header="Tranche 1" />
         </DataTable>
       </div>
     </div>
@@ -323,6 +325,7 @@ const fpcCounts = computed(() => {
 onMounted(async () => {
   if (regionName) {
     await fetchCareGroupSummaryByRegion(regionName);
+    console.log("Submissions", allCareGroupsByRegion.value)
     const date = new Date();
     currentDate.value = formatDate(date);
   }
