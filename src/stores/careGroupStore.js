@@ -136,7 +136,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         async fetchEncountersByClientName(clientName) {
             this.loading = true;
             try {
-              const res = await api.get(`/upload/encounters?clients=${encodeURIComponent(clientName)}`);
+              const res = await api.get(`/encounters?clients=${encodeURIComponent(clientName)}`);
                 this.encounters = res.data.data
                 console.log("Client Encounters Total",res.data.total);
             } catch (error) {
@@ -156,7 +156,7 @@ export const useCareGroupStore = defineStore("careGroup", {
               params.end = endDate;
             }
         
-            const res = await api.get("/encounters/summary", { params });
+            const res = await api.get("/summary", { params });
             this.careGroupSummary = res.data;
             console.log("client summar", this.careGroupSummary);
              console.log("api:", res.request.responseURL);
@@ -179,8 +179,8 @@ export const useCareGroupStore = defineStore("careGroup", {
             params.start = startDate;
             params.end = endDate;
           }
-          const summary = await api.get("/encounters/summary", { params });
-          const res = await api.get("/encounters/region-caregroups-summary", { params });
+          const summary = await api.get("/summary", { params });
+          const res = await api.get("/summary/region-caregroups-summary", { params });
           
           this.summaryByRegion = summary.data
           this.allCareGroupsByRegion = res.data
@@ -210,7 +210,7 @@ export const useCareGroupStore = defineStore("careGroup", {
               params.endDate = endDate;
             }
         
-            const res = await api.get("/upload/onboarded/patients", { params });
+            const res = await api.get("/onboarded/patients", { params });
             this.patientsByCareGroup = res.data.data;
             this.careGroupTotalPatients = res.data.total;
           } catch (error) {
