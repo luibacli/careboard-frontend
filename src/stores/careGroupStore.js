@@ -101,7 +101,7 @@ export const useCareGroupStore = defineStore("careGroup", {
       
 
                 this.loading = false;
-                console.log("Care groups fetched:", res.data);
+               
             }, 300);
       },
       
@@ -116,7 +116,7 @@ export const useCareGroupStore = defineStore("careGroup", {
           }))
           
         } catch (error) {
-          console.log("Failed to fetch caregroups", error);
+          console.error("Failed to fetch caregroups", error);
         }
       },
           
@@ -139,7 +139,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             try {
               const res = await api.get(`/encounters?clients=${encodeURIComponent(clientName)}`);
                 this.encounters = res.data.data
-                console.log("Client Encounters Total",res.data.total);
+               
             } catch (error) {
               console.error("Failed to fetch encounters:", error);
               throw error;
@@ -159,8 +159,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         
             const res = await api.get("/summary", { params });
             this.careGroupSummary = res.data;
-            console.log("client summar", this.careGroupSummary);
-             console.log("api:", res.request.responseURL);
+      
           } catch (error) {
             console.error("Failed to fetch client summary", error);
           } finally {
@@ -280,7 +279,6 @@ export const useCareGroupStore = defineStore("careGroup", {
                 this.careGroups.push(res.data);
                 this.resetCareGroupForm();
                 this.dialogVisible = false;
-                console.log("Care group created:", res.data);
                 return { success: true, data: res.data };
             } catch (error) {
                 console.error("Failed to create care group:", error);
