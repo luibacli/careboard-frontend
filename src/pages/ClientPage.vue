@@ -225,7 +225,10 @@
           </div>
           <!-- Dialog for SAP Validation -->
           <Dialog v-model:visible="showValidateSapDialog" :style="{ width: '38rem' }" modal header="Validate SAP">
-            <div class="grid grid-cols-2 p-4 gap-4 items-center">
+            <div v-if="sapValidating" class="flex justify-center">
+              <i class="pi pi-spin pi-spinner text-4xl mb-2"></i>
+            </div>
+            <div v-else class="grid grid-cols-2 p-4 gap-4 items-center">
               <div>
                 <label for="startDate" class="font-bold text-xs mb-2">Encounter Start Date</label>
                 <DatePicker v-model="startDate" showIcon fluid :showOnFocus="false" inputId="startDate"
@@ -460,6 +463,7 @@ const {
   discrepancies,
   encounterData,
   sapData,
+  sapValidating,
 
 } = storeToRefs(careGroupStore);
 
@@ -599,20 +603,25 @@ async function handleFileUpload(event) {
 }
 
 async function handleValidation() {
-  const result = await validateSap(careGroup.value.client_name, newStartDate.value, newEndDate.value, formatDateToMMYYYY(selectedPeriod.value))
-  if (result.success) {
-    toast.add({
-      severity: "success",
-      summary: "Validation Completed",
-      life: 5000,
-    })
-  } else {
-    toast.add({
-      severity: "error",
-      summary: "Validation Failed",
-      life: 5000
-    })
+  sapValidating.value = true;
+  if (sapValidating) {
+    const result = await validateSap(careGroup.value.client_name, newStartDate.value, newEndDate.value, formatDateToMMYYYY(selectedPeriod.value))
+    if (result.success) {
+      sapValidating.value = false;
+      toast.add({
+        severity: "success",
+        summary: "Validation Completed",
+        life: 5000,
+      })
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "Validation Failed",
+        life: 5000
+      })
+    }
   }
+
 }
 
 async function handleOnboardedFileUpload(event) {

@@ -39,6 +39,7 @@ export const useCareGroupStore = defineStore("careGroup", {
     sapUploadTotal: 0,
     showSapUpload: false,
     showValidateSapDialog: false,
+    sapValidating: false,
     sapCompleted: false,
     sapResult: null,
     sapValidationData: null,
@@ -398,6 +399,7 @@ export const useCareGroupStore = defineStore("careGroup", {
 
   
       async validateSap(client, startDate = null, endDate = null, period) {
+       
         try {
           const params = {};
           if (!client || !startDate || !endDate || !period) {
@@ -421,7 +423,7 @@ export const useCareGroupStore = defineStore("careGroup", {
           console.error("Failed to validate SAP", error);
           return { success: false}
           
-        }
+        } 
     
   }
 
