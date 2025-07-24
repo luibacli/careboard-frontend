@@ -50,7 +50,7 @@ export const useEncounterStore = defineStore('encounter', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await api.get('upload/encounters', {
+        const response = await api.get('/encounters', {
           params: { page, limit }
         });
         this.encounters = response.data.data;
@@ -78,7 +78,7 @@ async uploadFile(file) {
 
   try {
     const response = await api.post(
-      `/upload?socketId=${this.socketId}`, // 💡 this is critical
+      `/encounters?socketId=${this.socketId}`, // 💡 this is critical
       formData,
       {
         headers: { "Content-Type": "multipart/form-data" },

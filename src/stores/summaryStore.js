@@ -21,7 +21,7 @@ export const useSummaryStore = defineStore('summary', {
           if (end) params.end = end;
           if (year) params.year = year;
       
-          const res = await api.get('/encounters/summary', { params });
+          const res = await api.get('/summary', { params });
           this.summaryData = res.data;
         } catch (err) {
           console.error(err);

@@ -130,7 +130,7 @@
               }
             ]
 
-          }" style="width: 300px;" />
+          }" style="width: 250px;" />
         </div>
       </div>
 
