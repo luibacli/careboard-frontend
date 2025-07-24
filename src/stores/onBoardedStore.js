@@ -64,7 +64,7 @@ export const useOnboardedStore = defineStore('onboarded', {
       this.patients = [];
     
       try {
-        const response = await api.get('/upload/onboarded/patients', {
+        const response = await api.get('/onboarded/patients', {
           params: { page, limit, startDate, endDate }
         });
         
@@ -96,7 +96,7 @@ export const useOnboardedStore = defineStore('onboarded', {
         params.end = endDate;
       }
       try {
-        const response = await api.get('/upload/onboarded/', {params});
+        const response = await api.get('/onboarded/patients', {params});
         this.clientPatients = response.data;
         this.clientPatientsTotal = response.data.toal
       } catch (err) {
@@ -107,25 +107,7 @@ export const useOnboardedStore = defineStore('onboarded', {
       }
     },
 
-    async fetchUsers(page = 1, limit = 50) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await api.get('upload/upload-onboarded', {
-          params: { page, limit }
-        });
-        this.users = response.data.data;
-        this.totalUsers = response.data.total;
-        console.log("Total Users:", this.totalUsers);
-      } catch (error) {
-        console.error("Error Fething users", error);
-        this.error = "Failed to fetch patients"
-        
-      } finally {
-        this.loading = false;
-      }
-
-    },
+  
     filterUsers(searchTerm) {
       this.loading = true;
       this.patients = [];
@@ -155,7 +137,7 @@ async uploadFile(file) {
 
   try {
     const response = await api.post(
-      `/upload/upload-onboarded?socketId=${this.socketId}`, // 💡 this is critical
+      `/onboarded?socketId=${this.socketId}`, // 💡 this is critical
       formData,
       {
         headers: { "Content-Type": "multipart/form-data" },
