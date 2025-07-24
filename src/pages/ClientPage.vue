@@ -550,8 +550,6 @@ const newEndDate = computed(() =>
 const applyFilter = () => {
   if (startDate.value && endDate.value) {
     fetchSummaryByClientName(careGroup.value.client_name, newStartDate.value, newEndDate.value);
-    console.log("caregroup summary filter", careGroupSummary.value);
-    console.log("Dates:", newEndDate.value, newEndDate.value);
     fetchPatientsByClientName(careGroup.value.client_name, startDate.value, endDate.value);
   } else {
     fetchEncountersByClientName(careGroup.value.client_name);

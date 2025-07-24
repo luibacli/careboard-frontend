@@ -55,7 +55,7 @@ export const useEncounterStore = defineStore('encounter', {
         });
         this.encounters = response.data.data;
         this.totalEncounters = response.data.total;
-        console.log("Total Encounters:", this.totalEncounters);
+        
 
       } catch (error) {
         console.error("Error Fetching users", error)

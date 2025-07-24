@@ -221,7 +221,7 @@ const isExporting = ref(false);
 async function downloadPDF() {
   isExporting.value = true;
   try {
-    console.log("Starting PDF export...");
+
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -242,7 +242,7 @@ async function downloadPDF() {
     // Generate and save PDF
     html2pdf().from(element).set(opt).save();
 
-    console.log("PDF export done!");
+
   } catch (error) {
     console.error("Error generating PDF:", error);
     alert("Error generating PDF: " + (error?.message ?? error));
@@ -284,7 +284,7 @@ function applyFilter() {
     fetchCareGroupSummaryByRegion(regionName, formatDateYMD(startDate.value), formatDateYMD(endDate.value));
     newFormattedStartDate.value = formatDate(startDate.value);
     newFormattedEndDate.value = formatDate(endDate.value);
-    console.log("From: ", newFormattedStartDate.value, " TO: ", newFormattedEndDate.value);
+
   } else {
     fetchCareGroupSummaryByRegion(regionName);
   }
@@ -325,7 +325,6 @@ const fpcCounts = computed(() => {
 onMounted(async () => {
   if (regionName) {
     await fetchCareGroupSummaryByRegion(regionName);
-    console.log("Submissions", allCareGroupsByRegion.value)
     const date = new Date();
     currentDate.value = formatDate(date);
   }

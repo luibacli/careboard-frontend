@@ -1,145 +1,111 @@
 <template>
-<Toast />
-<div class="flex items-center justify-between mb-4 caregroup-header">
+  <Toast />
+  <div class="flex items-center justify-between mb-4 caregroup-header">
 
-   
+
     <p class="text-2xl font-bold">All Caregroups</p>
 
     <div>
-        <InputText
-  v-model="searchQuery"
-  placeholder="Search by client name"
-  class="w-72 mr-2 border-gray-300 focus:border-blue-500"
-  clearable
-/>
+      <InputText v-model="searchQuery" placeholder="Search by client name"
+        class="w-72 mr-2 border-gray-300 focus:border-blue-500" clearable />
 
-        <Select
-  v-model="selectedRegion"
-  :options="regions"
-  optionLabel="label"
-  optionValue="value"
-  placeholder="Filter by Main Region"
-  class="w-60 mr-2"
-/>
-        <Button label="Add CareGroup" icon="pi pi-plus" class="p-button-success mr-2"  @click="dialogVisible = true"/>
-        <Button
-  label="Refresh"
-  icon="pi pi-refresh"
-  class="p-button-secondary"
-  @click="refresh"
-/>
+      <Select v-model="selectedRegion" :options="regions" optionLabel="label" optionValue="value"
+        placeholder="Filter by Main Region" class="w-60 mr-2" />
+      <Button label="Add CareGroup" icon="pi pi-plus" class="p-button-success mr-2" @click="dialogVisible = true" />
+      <Button label="Refresh" icon="pi pi-refresh" class="p-button-secondary" @click="refresh" />
     </div>
-</div>
-<!-- Dialog for CareGroup Creation -->
- <Dialog v-model:visible="dialogVisible"  header="Create CareGroup" modal :style="{ width: '50vw' }">
+  </div>
+  <!-- Dialog for CareGroup Creation -->
+  <Dialog v-model:visible="dialogVisible" header="Create CareGroup" modal :style="{ width: '50vw' }">
     <Form v-slot="$form" :resolver="resolver" :careGroupForm="careGroupForm" @submit="save">
-        <div class="flex items-center gap-4 mb-4">
-       <label for="name" class="font-semibold w-24">Client Name</label>
-       <InputText id="name" class="flex-auto" autocomplete="off" v-model="careGroupForm.client_name" />
-    </div>
-    <div class="flex items-center gap-4 mb-4">
-       <label for="address" class="font-semibold w-24">Address</label>
-       <InputText id="address" class="flex-auto" autocomplete="off" v-model="careGroupForm.address"/>
-    </div>
-    <div class="flex items-center gap-4 mb-4">
-       <label for="city" class="font-semibold w-24 text-sm">City/Municipality</label>
-       <InputText id="city" class="flex-auto" autocomplete="off" v-model="careGroupForm.city" />
-    </div>
-    <div class="flex items-center gap-4 mb-4">
-       <label for="province" class="font-semibold w-24">Province</label>
-       <InputText id="province" class="flex-auto" autocomplete="off" v-model="careGroupForm.province" />
-    </div>
-    <div class="flex items-center mb-4 justify-between">
-        <div class="flex items-center gap-4 "> 
-            <label for="main" class="font-semibold w-24">Main Region</label>
-            <Select id="region" v-model="careGroupForm.main" :options="regions" optionLabel="label"
-                    optionValue="value" placeholder="Select Region" class="w-35" />
-                    <label for="type" class="font-semibold w-24">Clinic Type</label>
-            <Select id="type" v-model="careGroupForm.type" :options="clinicTypes" optionLabel="label"
-                    optionValue="value" placeholder="Select Type" class="w-35" />
+      <div class="flex items-center gap-4 mb-4">
+        <label for="name" class="font-semibold w-24">Client Name</label>
+        <InputText id="name" class="flex-auto" autocomplete="off" v-model="careGroupForm.client_name" />
+      </div>
+      <div class="flex items-center gap-4 mb-4">
+        <label for="address" class="font-semibold w-24">Address</label>
+        <InputText id="address" class="flex-auto" autocomplete="off" v-model="careGroupForm.address" />
+      </div>
+      <div class="flex items-center gap-4 mb-4">
+        <label for="city" class="font-semibold w-24 text-sm">City/Municipality</label>
+        <InputText id="city" class="flex-auto" autocomplete="off" v-model="careGroupForm.city" />
+      </div>
+      <div class="flex items-center gap-4 mb-4">
+        <label for="province" class="font-semibold w-24">Province</label>
+        <InputText id="province" class="flex-auto" autocomplete="off" v-model="careGroupForm.province" />
+      </div>
+      <div class="flex items-center mb-4 justify-between">
+        <div class="flex items-center gap-4 ">
+          <label for="main" class="font-semibold w-24">Main Region</label>
+          <Select id="region" v-model="careGroupForm.main" :options="regions" optionLabel="label" optionValue="value"
+            placeholder="Select Region" class="w-35" />
+          <label for="type" class="font-semibold w-24">Clinic Type</label>
+          <Select id="type" v-model="careGroupForm.type" :options="clinicTypes" optionLabel="label" optionValue="value"
+            placeholder="Select Type" class="w-35" />
         </div>
-      
-    </div>
-    <div class="flex items-center justify-end">
-            <Button label="Save" icon="pi pi-check" class="p-button-success ml-2" type="submit"/>
-        </div>
+
+      </div>
+      <div class="flex items-center justify-end">
+        <Button label="Save" icon="pi pi-check" class="p-button-success ml-2" type="submit" />
+      </div>
     </Form>
-    
- </Dialog>
 
-<!-- Table for caregroups here -->
-<DataTable
-  :value="careGroups"
-  :loading="loading"
-  class="w-full mt-4"
-  stripedRows
-  paginator
-  :rows="10"
->
-<Column header="Client Name" sortable>
-  <template #body="slotProps">
-    <RouterLink
-      :to="`/caregroups/${slotProps.data._id}`"
-      class="text-blue-600 hover:underline"
-    >
-      {{ slotProps.data.client_name }}
-    </RouterLink>
-  </template>
-</Column>
+  </Dialog>
 
-  <Column field="address" header="Address" sortable />
-  <Column field="city" header="City" sortable />
-  <Column field="province" header="Province" sortable />
-  <Column field="main" header="Main Region" sortable />
-  <Column field="type" header="Type" sortable />
+  <!-- Table for caregroups here -->
+  <DataTable :value="careGroups" :loading="loading" class="w-full mt-4" stripedRows paginator :rows="10">
+    <Column header="Client Name" sortable>
+      <template #body="slotProps">
+        <RouterLink :to="`/caregroups/${slotProps.data._id}`" class="text-blue-600 hover:underline">
+          {{ slotProps.data.client_name }}
+        </RouterLink>
+      </template>
+    </Column>
 
-  <Column header="Status">
-    <template #body="slotProps">
-      <Tag 
-        :value="slotProps.data.status" 
-        :severity="slotProps.data.status === 'active' ? 'success' : 'danger'" 
-      />
+    <Column field="address" header="Address" sortable />
+    <Column field="city" header="City" sortable />
+    <Column field="province" header="Province" sortable />
+    <Column field="main" header="Main Region" sortable />
+    <Column field="type" header="Type" sortable />
+
+    <Column header="Status">
+      <template #body="slotProps">
+        <Tag :value="slotProps.data.status" :severity="slotProps.data.status === 'active' ? 'success' : 'danger'" />
+      </template>
+    </Column>
+
+    <Column header="Actions" style="width: 180px;">
+      <template #body="slotProps">
+        <Button icon="pi pi-pencil" class="p-button-text p-button-sm text-primary"
+          @click="editCareGroup(slotProps.data)" />
+        <Button icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
+          @click="removeCareGroup(slotProps.data._id)" />
+      </template>
+    </Column>
+
+
+    <template #empty>
+      <div class="text-center text-gray-500 py-6">
+        No care groups found. Click "Add CareGroup" to create your first one.
+      </div>
     </template>
-  </Column>
 
-  <Column header="Actions" style="width: 180px;">
-  <template #body="slotProps">
-    <Button 
-      icon="pi pi-pencil"
-      class="p-button-text p-button-sm text-primary"
-      @click="editCareGroup(slotProps.data)"
-    />
-    <Button 
-      icon="pi pi-trash"
-      class="p-button-text p-button-sm text-red-500"
-      @click="removeCareGroup(slotProps.data._id)"
-    />
-  </template>
-</Column>
-
-
-  <template #empty>
-    <div class="text-center text-gray-500 py-6">
-      No care groups found. Click "Add CareGroup" to create your first one.
-    </div>
-  </template>
-
-  <template #loading>
-    <div class="flex flex-col items-center justify-center py-8 text-blue-500">
-      <i class="pi pi-spin pi-spinner text-4xl mb-2"></i>
-      <span>Loading care groups...</span>
-    </div>
-  </template>
-</DataTable>
+    <template #loading>
+      <div class="flex flex-col items-center justify-center py-8 text-blue-500">
+        <i class="pi pi-spin pi-spinner text-4xl mb-2"></i>
+        <span>Loading care groups...</span>
+      </div>
+    </template>
+  </DataTable>
 
 
 
 
 
 
- </template>
- 
- <script setup>
+</template>
+
+<script setup>
 import { ref, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button'
@@ -148,14 +114,14 @@ import { Select, Dialog, InputText } from 'primevue';
 import { Form } from '@primevue/forms';
 import { useCareGroupStore } from '../stores/careGroupStore';
 import { useToast } from 'primevue/usetoast';
-import {z} from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import Toast from 'primevue/toast';
 
 const toast = useToast();
 const careGroupStore = useCareGroupStore();
 const { fetchCareGroups, createCareGroup, fetchCareGroupByMain, deleteCareGroup } = careGroupStore;
-const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible, loading, clinicTypes, selectedClinicType} = storeToRefs(careGroupStore);
+const { careGroups, careGroupForm, regions, selectedRegion, dialogVisible, loading, clinicTypes, selectedClinicType } = storeToRefs(careGroupStore);
 
 
 
@@ -235,8 +201,7 @@ const save = async () => {
 
 const editCareGroup = (careGroup) => {
   // Populate the form with the selected care group
-    careGroupForm.value = { ...careGroup };
-  console.log("Editing care group:", careGroupForm.value);
+  careGroupForm.value = { ...careGroup };
   dialogVisible.value = true;
 };
 
@@ -286,7 +251,7 @@ watch([searchQuery, selectedRegion], ([newSearch, newRegion]) => {
 
 
 onMounted(async () => {
-    await fetchCareGroups();
+  await fetchCareGroups();
 });
 
- </script>
+</script>
