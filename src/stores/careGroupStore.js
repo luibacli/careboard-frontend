@@ -370,7 +370,7 @@ export const useCareGroupStore = defineStore("careGroup", {
 
   try {
     const response = await api.post(
-      `/upload/upload-sap?socketId=${encodeURIComponent(this.socketId)}&client=${encodeURIComponent(client)}&period=${encodeURIComponent(period)}`,
+      `/sap?socketId=${encodeURIComponent(this.socketId)}&client=${encodeURIComponent(client)}&period=${encodeURIComponent(period)}`,
       formData,
       {
         headers: { "Content-Type": "multipart/form-data" },
@@ -409,7 +409,7 @@ export const useCareGroupStore = defineStore("careGroup", {
             params.period = period
           }
 
-          const res = await api.get("/upload/validate-sap", { params })
+          const res = await api.get("/sap", { params })
           this.sapValidationData = res.data
           this.discrepancies = res.data.discrepancies
           this.encounterData = res.data.encounterData
