@@ -10,6 +10,7 @@ export const useCareGroupStore = defineStore("careGroup", {
         careGroups: [],
         allCareGroups: [],
         careGroupSummary: null,
+        clientSummaryData: null,
         careGroupForm: {
             id: null,
             client_name: "",
@@ -79,12 +80,13 @@ export const useCareGroupStore = defineStore("careGroup", {
         error: null,
     }),
     getters: {
-        totalFPE: (state) => state.careGroupSummary?.fpe?.[0]?.count || 0,
-        totalFPC: (state) => state.careGroupSummary?.fpc?.[0]?.count || 0,
+        totalFPE: (state) => state.careGroupSummary?.fpeCount || 0,
+        totalFPC: (state) => state.careGroupSummary?.fpcCount || 0,
+        totalFollowUp: (state) => state.careGroupSummary?.followUPCount || 0,
         totalLabs: (state) => state.careGroupSummary?.labs?.[0]?.total || 0,
       totalMeds: (state) => state.careGroupSummary?.meds?.[0]?.total || 0,
-      totalFpePending: (state) => state.careGroupSummary?.fpePending?.[0]?.count || 0,
-      totalFpcPending: (state) => state.careGroupSummary?.fpcPending?.[0]?.count || 0,
+        totalFpePending: (state) => state.careGroupSummary?.fpePendingRealTotal || 0,
+        totalFpcPending: (state) => state.careGroupSummary?.fpcPendingRealTotal || 0,
     
     },
     actions: {
@@ -328,6 +330,17 @@ export const useCareGroupStore = defineStore("careGroup", {
             };
       },
         
+      async clientEncounterSummary(clientName) {
+        try {
+          const params = {facility: clientName}
+          const res = await api.get('/encounters/summary', {params})
+          this.clientSummaryData = res.data;
+        } catch (error) {
+          console.error("Failed to fecth client summary data", error)
+          
+        }
+      },
+        
       startUpload() {
         this.sapUploading = true;
         this.sapCompleted = false;
@@ -351,7 +364,8 @@ export const useCareGroupStore = defineStore("careGroup", {
         this.showSapUpload = false;
         this.sapResult = data;
       });
-    },
+      },
+        
         
   async uploadSAP(file, client, period) {
   if (!file) {

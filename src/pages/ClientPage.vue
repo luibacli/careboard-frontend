@@ -62,8 +62,20 @@
                 <div class="flex items-center space-x-4">
                   <i class="pi pi-comments text-purple-500 text-2xl"></i>
                   <div>
-                    <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
+                    <h2 class="text-sm text-gray-500 font-semibold">First Patient Consult</h2>
                     <p class="text-2xl font-bold">{{ totalFPC.toLocaleString() }}</p>
+                  </div>
+                </div>
+              </template>
+            </Card>
+            <!-- Consultation -->
+            <Card class="shadow border border-gray-200">
+              <template #content>
+                <div class="flex items-center space-x-4">
+                  <i class="pi pi-comments text-purple-500 text-2xl"></i>
+                  <div>
+                    <h2 class="text-sm text-gray-500 font-semibold">Follow-up Consultation</h2>
+                    <p class="text-2xl font-bold">{{ totalFollowUp.toLocaleString() }}</p>
                   </div>
                 </div>
               </template>
@@ -74,7 +86,7 @@
                 <div class="flex items-center space-x-4">
                   <i class="pi pi-shield text-pink-500 text-2xl"></i>
                   <div>
-                    <h2 class="text-sm text-gray-500 font-semibold">Laboratory Orders</h2>
+                    <h2 class="text-sm text-gray-500 font-semibold">Ordered Laboratories</h2>
                     <p class="text-2xl font-bold">{{ totalLabs.toLocaleString() }}</p>
                   </div>
                 </div>
@@ -86,7 +98,7 @@
                 <div class="flex items-center space-x-4">
                   <i class="pi pi-heart-fill text-red-500 text-2xl"></i>
                   <div>
-                    <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
+                    <h2 class="text-sm text-gray-500 font-semibold">Prescribed Medicines</h2>
                     <p class="text-2xl font-bold">{{ totalMeds.toLocaleString() }}</p>
                   </div>
                 </div>
@@ -431,7 +443,8 @@ const {
   uploadSAP,
   connectSocket,
   fetchAllCareGroups,
-  validateSap
+  validateSap,
+  clientEncounterSummary,
 } = careGroupStore;
 const {
   careGroup,
@@ -445,6 +458,7 @@ const {
   totalFPE,
   totalLabs,
   totalMeds,
+  totalFollowUp,
   totalFpePending,
   totalFpcPending,
   careGroupTotalPatients,
@@ -464,6 +478,7 @@ const {
   encounterData,
   sapData,
   sapValidating,
+  clientSummaryData,
 
 } = storeToRefs(careGroupStore);
 
@@ -551,6 +566,7 @@ const applyFilter = () => {
   if (startDate.value && endDate.value) {
     fetchSummaryByClientName(careGroup.value.client_name, newStartDate.value, newEndDate.value);
     fetchPatientsByClientName(careGroup.value.client_name, startDate.value, endDate.value);
+
   } else {
     fetchEncountersByClientName(careGroup.value.client_name);
     fetchPatientsByClientName(careGroup.value.client_name);
@@ -705,7 +721,10 @@ onMounted(async () => {
     // Fetch encounters
     if (careGroup.value?.client_name) {
       await fetchEncountersByClientName(careGroup.value.client_name);
-      await fetchSummaryByClientName(careGroup.value.client_name,);
+      await fetchSummaryByClientName(careGroup.value.client_name);
+      await clientEncounterSummary(careGroup.value.client_name)
+      console.log("Summary:", clientSummaryData.value);
+
       // Fetch Patients
       await fetchPatientsByClientName(careGroup.value.client_name);
     }

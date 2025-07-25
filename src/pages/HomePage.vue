@@ -41,17 +41,23 @@ const fpcCounts = computed(() => {
 });
 
 const fpeCountTotal = computed(() =>
-  summaryStore.summaryData?.fpe?.[0]?.count || 0
+  summaryStore.summaryData?.fpeCount || 0
 );
 const fpcCountTotal = computed(() =>
-  summaryStore.summaryData?.fpc?.[0]?.count || 0
+  summaryStore.summaryData?.fpcCount || 0
 );
+
+const followUpTotal = computed(() =>
+  summaryStore.summaryData?.followUpCount || 0
+)
 const labsCountTotal = computed(() =>
   summaryStore.summaryData?.labs?.[0]?.total || 0
 );
 const medsCountTotal = computed(() =>
   summaryStore.summaryData?.meds?.[0]?.total || 0
 );
+
+
 
 onMounted(async () => {
   await summaryStore.loadSummary();
@@ -77,27 +83,13 @@ const applyFilter = async () => {
     <div class="flex flex-col sm:flex-row gap-4 items-end p-3">
       <div>
         <label for="startDate" class="font-bold text-xs mb-2">Start Date</label>
-        <DatePicker
-          v-model="startDate"
-          showIcon
-          fluid
-          :showOnFocus="false"
-          inputId="startDate"
-          dateFormat="dd/mm/yy"
-          placeholder="dd/mm/yyyy"
-        />
+        <DatePicker v-model="startDate" showIcon fluid :showOnFocus="false" inputId="startDate" dateFormat="dd/mm/yy"
+          placeholder="dd/mm/yyyy" />
       </div>
       <div>
         <label for="endDate" class="font-bold text-xs mb-2">End Date</label>
-        <DatePicker
-          v-model="endDate"
-          showIcon
-          fluid
-          :showOnFocus="false"
-          inputId="endDate"
-          dateFormat="dd/mm/yy"
-          placeholder="dd/mm/yyyy"
-        />
+        <DatePicker v-model="endDate" showIcon fluid :showOnFocus="false" inputId="endDate" dateFormat="dd/mm/yy"
+          placeholder="dd/mm/yyyy" />
       </div>
       <Button label="Load Data" severity="info" @click="applyFilter" />
     </div>
@@ -144,18 +136,33 @@ const applyFilter = async () => {
           </template>
         </Card>
 
+        <!--FPC  -->
+        <Card class="shadow border border-gray-200">
+          <template #content>
+            <div class="flex items-center space-x-4">
+              <i class="pi pi-comments text-purple-500 text-2xl"></i>
+              <div>
+                <h2 class="text-sm text-gray-500 font-semibold">First Patient Consult</h2>
+                <p class="text-2xl font-bold">{{ fpcCountTotal.toLocaleString() }}</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+
         <!-- Consultation -->
         <Card class="shadow border border-gray-200">
           <template #content>
             <div class="flex items-center space-x-4">
               <i class="pi pi-comments text-purple-500 text-2xl"></i>
               <div>
-                <h2 class="text-sm text-gray-500 font-semibold">Consultation</h2>
-                <p class="text-2xl font-bold">{{ fpcCountTotal.toLocaleString() }}</p>
+                <h2 class="text-sm text-gray-500 font-semibold">Follow-up Consultations </h2>
+                <p class="text-2xl font-bold">{{ followUpTotal.toLocaleString() }}</p>
               </div>
             </div>
           </template>
         </Card>
+
 
         <!-- Laboratories Provided -->
         <Card class="shadow border border-gray-200">
@@ -163,7 +170,7 @@ const applyFilter = async () => {
             <div class="flex items-center space-x-4">
               <i class="pi pi-shield text-yellow-500 text-2xl"></i>
               <div>
-                <h2 class="text-sm text-gray-500 font-semibold">Laboratories Provided</h2>
+                <h2 class="text-sm text-gray-500 font-semibold">Ordered Laboratories</h2>
                 <p class="text-2xl font-bold">{{ labsCountTotal.toLocaleString() }}</p>
               </div>
             </div>
@@ -176,7 +183,7 @@ const applyFilter = async () => {
             <div class="flex items-center space-x-4">
               <i class="pi pi-heart-fill text-red-500 text-2xl"></i>
               <div>
-                <h2 class="text-sm text-gray-500 font-semibold">Medicines Provided</h2>
+                <h2 class="text-sm text-gray-500 font-semibold">Prescribed Medicines</h2>
                 <p class="text-2xl font-bold">{{ medsCountTotal.toLocaleString() }}</p>
               </div>
             </div>
@@ -190,11 +197,8 @@ const applyFilter = async () => {
           <!-- <h2 class="text-sm text-gray-500">Monthly FPE & FPC</h2> -->
           <div>
             <label class="block text-xs text-gray-500 mb-1">Year</label>
-            <select
-              v-model="selectedYear"
-              @change="applyFilter"
-              class="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
+            <select v-model="selectedYear" @change="applyFilter"
+              class="border border-gray-300 rounded px-2 py-1 text-sm">
               <option disabled value="">Select Year</option>
               <option>2022</option>
               <option>2023</option>
@@ -203,25 +207,21 @@ const applyFilter = async () => {
             </select>
           </div>
         </div>
-        <Chart
-          type="bar"
-          :data="{
-            labels: monthLabels,
-            datasets: [
-              {
-                label: 'FPE',
-                data: fpeCounts,
-                backgroundColor: '#3b82f6'
-              },
-              {
-                label: 'FPC',
-                data: fpcCounts,
-                backgroundColor: '#f59e0b'
-              }
-            ]
-          }"
-          style="width: 1000px; height: 420px;"
-        />
+        <Chart type="bar" :data="{
+          labels: monthLabels,
+          datasets: [
+            {
+              label: 'FPE',
+              data: fpeCounts,
+              backgroundColor: '#3b82f6'
+            },
+            {
+              label: 'FPC',
+              data: fpcCounts,
+              backgroundColor: '#f59e0b'
+            }
+          ]
+        }" style="width: 1000px; height: 420px;" />
       </div>
 
       <!-- Pie Charts Row -->
@@ -229,39 +229,29 @@ const applyFilter = async () => {
         <!-- FPE vs FPC Pie Chart -->
         <div class="bg-white rounded shadow p-4 flex flex-col items-center">
           <h2 class="text-sm text-gray-500 mb-2">Registered vs FPE vs FPC Distribution</h2>
-          <Chart
-            v-if="summaryStore.summaryData"
-            type="doughnut"
-            :data="{
-              labels: ['Registered', 'FPE', 'FPC'],
-              datasets: [
-                {
-                  data: [onBoardedStore.totalPatients,fpeCountTotal, fpcCountTotal],
-                  backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
-                }
-              ]
-            }"
-            style="max-width: 300px; height: 300px;"
-          />
+          <Chart v-if="summaryStore.summaryData" type="doughnut" :data="{
+            labels: ['Registered', 'FPE', 'FPC'],
+            datasets: [
+              {
+                data: [onBoardedStore.totalPatients, fpeCountTotal, fpcCountTotal],
+                backgroundColor: ['#f97316', '#3b82f6', '#f59e0b']
+              }
+            ]
+          }" style="max-width: 300px; height: 300px;" />
         </div>
 
         <!-- Labs vs Meds Pie Chart -->
         <div class="bg-white rounded shadow p-4 flex flex-col items-center">
           <h2 class="text-sm text-gray-500 mb-2">Labs vs Meds Provided</h2>
-          <Chart
-            v-if="summaryStore.summaryData"
-            type="pie"
-            :data="{
-              labels: ['Labs', 'Meds'],
-              datasets: [
-                {
-                  data: [labsCountTotal, medsCountTotal],
-                  backgroundColor: ['#10b981', '#f97316']
-                }
-              ]
-            }"
-            style="max-width: 300px; height: 300px;"
-          />
+          <Chart v-if="summaryStore.summaryData" type="pie" :data="{
+            labels: ['Labs', 'Meds'],
+            datasets: [
+              {
+                data: [labsCountTotal, medsCountTotal],
+                backgroundColor: ['#10b981', '#f97316']
+              }
+            ]
+          }" style="max-width: 300px; height: 300px;" />
         </div>
       </div>
     </div>
