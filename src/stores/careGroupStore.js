@@ -82,7 +82,7 @@ export const useCareGroupStore = defineStore("careGroup", {
     getters: {
         totalFPE: (state) => state.careGroupSummary?.fpeCount || 0,
         totalFPC: (state) => state.careGroupSummary?.fpcCount || 0,
-        totalFollowUp: (state) => state.careGroupSummary?.followUPCount || 0,
+        totalFollowUp: (state) => state.careGroupSummary?.followUpCount || 0,
         totalLabs: (state) => state.careGroupSummary?.labs?.[0]?.total || 0,
       totalMeds: (state) => state.careGroupSummary?.meds?.[0]?.total || 0,
         totalFpePending: (state) => state.careGroupSummary?.fpePendingRealTotal || 0,
