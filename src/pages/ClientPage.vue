@@ -197,7 +197,7 @@
               <Column header="Active">
                 <template #body="slotProps">
                   <Tag :value="slotProps.data.active"
-                    :severity="slotProps.data.active === 'yes' ? 'success' : 'danger'" />
+                    :severity="slotProps.data.active === 'Yes' ? 'success' : 'danger'" />
                 </template>
               </Column>
               <template #empty>
@@ -370,6 +370,7 @@
                   <Column field="memberType" header="Member Type" />
                   <Column field="dateOfRegistration" header="Date Of Registration" />
                   <Column field="dateOfEncounter" header="Date of Encounter" />
+
 
                   <template #empty>
                     <div class="text-center text-gray-500 py-6">
