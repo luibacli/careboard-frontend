@@ -428,7 +428,8 @@ import { useToast } from "primevue/usetoast";
 import { useCareGroupStore } from "../stores/careGroupStore";
 import { useEncounterStore } from "../stores/encounterStore";
 import { useOnboardedStore } from "../stores/onBoardedStore";
-import exportToExcel from "../lib/exportToExcel";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 
 const route = useRoute();
@@ -508,8 +509,26 @@ const monthLabels = [
 ];
 
 function downloadDiscrepancies() {
-  const data = discrepancies.value
-  exportToExcel(data, "discrepancies.xlsx")
+  const workbook = XLSX.utils.book_new();
+
+  const discrepanciesSheet = XLSX.utils.json_to_sheet(discrepancies.value);
+  const encountersSheet = XLSX.utils.json_to_sheet(encounterData.value);
+  const sapSheet = XLSX.utils.json_to_sheet(sapData.value);
+
+  XLSX.utils.book_append_sheet(workbook, discrepanciesSheet, "Discrepancies");
+  XLSX.utils.book_append_sheet(workbook, encountersSheet, "Encounters");
+  XLSX.utils.book_append_sheet(workbook, sapSheet, "SAP");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+  });
+
+  saveAs(blob, "careboard-export.xlsx");
 }
 
 function formatDate(dateInput) {
