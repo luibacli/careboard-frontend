@@ -274,7 +274,7 @@
             <TabPanels>
               <TabPanel value="0">
                 <div class="flex justify-end mb-1">
-                  <Button label="Download" size="small" severity="secondary" />
+                  <Button label="Download" size="small" severity="secondary" @click="downloadDiscrepancies" />
                 </div>
                 <DataTable :value="discrepancies" class="w-full text-sm" stripedRows scrollable
                   responsiveLayout="scroll" showGridlines paginator :rows="50" size="small">
@@ -428,6 +428,8 @@ import { useToast } from "primevue/usetoast";
 import { useCareGroupStore } from "../stores/careGroupStore";
 import { useEncounterStore } from "../stores/encounterStore";
 import { useOnboardedStore } from "../stores/onBoardedStore";
+import exportToExcel from "../lib/exportToExcel";
+
 
 const route = useRoute();
 const careGroupStore = useCareGroupStore();
@@ -504,6 +506,11 @@ const monthLabels = [
   "November",
   "December"
 ];
+
+function downloadDiscrepancies() {
+  const data = discrepancies.value
+  exportToExcel(data, "discrepancies.xlsx")
+}
 
 function formatDate(dateInput) {
   if (!dateInput) return '';
