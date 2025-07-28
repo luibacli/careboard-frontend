@@ -147,6 +147,7 @@
           <Column field="totals.registered" header="Registered" />
           <Column field="totals.fpe" header="FPE" />
           <Column field="totals.fpc" header="FPC" />
+          <Column field="totals.fuc" header="Follow-up" />
           <Column field="totals.submissions" header="Tranche 1" />
         </DataTable>
       </div>
@@ -164,6 +165,7 @@
           <Column field="totals.registered" header="Registered" />
           <Column field="totals.fpe" header="FPE" />
           <Column field="totals.fpc" header="FPC" />
+          <Column field="totals.fuc" header="Follow-up" />
           <Column field="totals.submissions" header="Tranche 1" />
         </DataTable>
       </div>
